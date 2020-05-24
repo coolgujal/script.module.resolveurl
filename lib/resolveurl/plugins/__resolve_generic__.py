@@ -17,7 +17,7 @@
 """
 import re
 import abc
-from lib import helpers
+from .lib import helpers
 from resolveurl.resolver import ResolveUrl
 
 
@@ -37,7 +37,7 @@ class ResolveGeneric(ResolveUrl):
 
     def __init__(self):
         if self.pattern is None:
-            self.pattern = '(?://|\.)(%s)/(?:embed[/-])?([A-Za-z0-9]+)' % re.escape('|'.join(self.domains))
+            self.pattern = r'(?://|\.)(%s)/(?:embed[/-])?([A-Za-z0-9]+)' % re.escape('|'.join(self.domains))
 
     def get_media_url(self, host, media_id):
         """

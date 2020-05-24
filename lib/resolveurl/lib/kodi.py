@@ -20,14 +20,15 @@ import xbmcplugin
 import xbmcgui
 import xbmc
 import xbmcvfs
-import urllib
-import urlparse
+from six.moves import urllib
+from six import string_types
+import six
 import sys
 import os
 import re
 import time
-import strings
-import CustomProgressDialog
+from . import strings
+from . import CustomProgressDialog
 
 addon = xbmcaddon.Addon('script.module.resolveurl')
 get_setting = addon.getSetting
@@ -37,19 +38,19 @@ _log = xbmc.log
 
 
 def get_path():
-    return addon.getAddonInfo('path').decode('utf-8')
+    return addon.getAddonInfo('path') if six.PY3 else addon.getAddonInfo('path').decode('utf-8')
 
 
 def get_profile():
-    return addon.getAddonInfo('profile').decode('utf-8')
+    return addon.getAddonInfo('profile') if six.PY3 else addon.getAddonInfo('profile').decode('utf-8')
 
 
 def translate_path(path):
-    return xbmc.translatePath(path).decode('utf-8')
+    return xbmc.translatePath(path) if six.PY3 else xbmc.translatePath(path).decode('utf-8')
 
 
 def set_setting(id, value):
-    if not isinstance(value, basestring):
+    if not isinstance(value, string_types):
         value = str(value)
     addon.setSetting(id, value)
 
@@ -130,7 +131,7 @@ else:
 
 def i18n(string_id):
     try:
-        return addon.getLocalizedString(strings.STRINGS[string_id]).encode('utf-8', 'ignore')
+        return addon.getLocalizedString(strings.STRINGS[string_id]) if six.PY3 else addon.getLocalizedString(strings.STRINGS[string_id]).encode('utf-8', 'ignore')
     except Exception as e:
         _log('Failed String Lookup: %s (%s)' % (string_id, e))
         return string_id
@@ -138,12 +139,12 @@ def i18n(string_id):
 
 def get_plugin_url(queries):
     try:
-        query = urllib.urlencode(queries)
+        query = urllib.parse.urlencode(queries)
     except UnicodeEncodeError:
         for k in queries:
-            if isinstance(queries[k], unicode):
+            if isinstance(queries[k], text_type) and six.PY2:
                 queries[k] = queries[k].encode('utf-8')
-        query = urllib.urlencode(queries)
+        query = urllib.parse.urlencode(queries)
 
     return sys.argv[0] + '?' + query
 

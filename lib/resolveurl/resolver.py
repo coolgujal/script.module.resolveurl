@@ -21,6 +21,7 @@ import os
 import re
 import abc
 from resolveurl import common
+from six import string_types
 
 abstractstaticmethod = abc.abstractmethod
 
@@ -102,7 +103,7 @@ class ResolveUrl(object):
             True if this plugin thinks it can handle the web_url or host
             otherwise False.
         """
-        if isinstance(host, basestring):
+        if isinstance(host, string_types):
             host = host.lower()
         
         if url:

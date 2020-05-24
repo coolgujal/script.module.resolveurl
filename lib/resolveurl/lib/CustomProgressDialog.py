@@ -16,8 +16,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 import xbmcgui
-import kodi
-import log_utils
+from . import kodi
+from . import log_utils
 
 logger = log_utils.Logger.get_logger(__name__)
 

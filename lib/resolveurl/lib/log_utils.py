@@ -18,12 +18,13 @@
 import json
 import xbmc
 import xbmcaddon
+import six
 from xbmc import LOGDEBUG, LOGERROR, LOGFATAL, LOGINFO, LOGNONE, LOGNOTICE, LOGSEVERE, LOGWARNING  # @UnusedImport
 
 addonsmr = xbmcaddon.Addon('script.module.resolveurl')
 
 def execute_jsonrpc(command):
-    if not isinstance(command, basestring):
+    if not isinstance(command, six.string_types):
         command = json.dumps(command)
     response = xbmc.executeJSONRPC(command)
     return json.loads(response)
@@ -71,7 +72,7 @@ class Logger(object):
                     return
         
         try:
-            if isinstance(msg, unicode):
+            if isinstance(msg, six.text_type) and six.PY2:
                 msg = '%s (ENCODED)' % (msg.encode('utf-8'))
     
             xbmc.log('%s: %s' % (self.__name, msg), level)

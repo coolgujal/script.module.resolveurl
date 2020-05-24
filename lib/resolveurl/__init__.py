@@ -28,17 +28,18 @@ For most cases you probably want to use :func:`resolveurl.resolve` or
 
 '''
 import re
-import urlparse
+from six.moves import urllib
+from six import string_types
 import sys
 import os
 import xbmc
 import xbmcvfs
 import xbmcgui
-import common
-from hmf import HostedMediaFile
+from . import common
+from .hmf import HostedMediaFile
 from resolveurl.resolver import ResolveUrl
 from resolveurl.plugins.__resolve_generic__ import ResolveGeneric
-from plugins import *
+from .plugins import *
 
 common.logger.log_notice('Initializing ResolveURL version: %s' % common.addon_version)
 MAX_SETTINGS = 75
@@ -49,7 +50,7 @@ host_cache = {}
 
 def add_plugin_dirs(dirs):
     global PLUGIN_DIRS
-    if isinstance(dirs, basestring):
+    if isinstance(dirs, string_types):
         PLUGIN_DIRS.append(dirs)
     else:
         PLUGIN_DIRS += dirs
@@ -71,7 +72,7 @@ def relevant_resolvers(domain=None, include_universal=None, include_popups=None,
     if include_external:
         load_external_plugins()
     
-    if isinstance(domain, basestring):
+    if isinstance(domain, string_types):
         domain = domain.lower()
 
     if include_universal is None:
@@ -206,11 +207,11 @@ def scrape_supported(html, regex=None, host_only=False):
         a list of links scraped from the html that passed validation
 
     """
-    if regex is None: regex = '''href\s*=\s*['"]([^'"]+)'''
+    if regex is None: regex = r'''href\s*=\s*['"]([^'"]+)'''
     links = []
     for match in re.finditer(regex, html):
         stream_url = match.group(1)
-        host = urlparse.urlparse(stream_url).hostname
+        host = urllib.parse.urlparse(stream_url).hostname
         if host_only:
             if host is None:
                 continue

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<settings>
+	<category label="ResolveURL">
+		<setting default="true" id="allow_universal" label="Enable Universal Resolvers" type="bool"/>
+		<setting default="true" id="allow_popups" label="Enable PopUps" type="bool"/>
+		<setting default="true" id="auto_pick" label="Automatically pick best quality" type="bool"/>
+		<setting default="true" id="use_cache" label="Use Function Cache" type="bool"/>
+		<setting id="reset_cache" type="action" label="Reset Function Cache" action="RunPlugin(plugin://script.module.resolveurl/?mode=reset_cache)"/>
+		<setting id="personal_nid" label="Your NID" type="text" visible="false" default=""/>
+		<setting id="last_ua_create" label="last_ua_create" type="number" visible="false" default="0"/>
+		<setting id="current_ua" label="current_ua" type="text" visible="false" default=""/>
+		<setting id="addon_debug" label="addon_debug" type="bool" visible="false" default="false"/>
+	</category>
+	<category label="Universal Resolvers">
+		<setting label="AllDebrid" type="lsep"/>
+		<setting id="AllDebridResolver_priority" type="number" label="Priority" default="100"/>
+		<setting id="AllDebridResolver_enabled" type="bool" label="Enabled" default="true"/>
+		<setting id="AllDebridResolver_login" type="bool" label="login" default="true" visible="false"/>
+		<setting id="AllDebridResolver_torrents" type="bool" label="Torrent Support" default="true"/>
+		<setting id="AllDebridResolver_cached_only" enable="eq(-1,true)" type="bool" label="Cached torrents only" default="false" />
+		<setting id="AllDebridResolver_auth" type="action" label="(Re)Authorise My Account" action="RunPlugin(plugin://script.module.resolveurl/?mode=auth_ad)"/>
+		<setting id="AllDebridResolver_reset" type="action" label="Reset My Authorisation" action="RunPlugin(plugin://script.module.resolveurl/?mode=reset_ad)"/>
+		<setting id="AllDebridResolver_token" visible="false" type="text" default=""/>
+	</category>
+	<category label="Resolvers 1">
+		<setting label="abcvideo" type="lsep"/>
+		<setting id="ABCVideoResolver_priority" type="number" label="Priority" default="100"/>
+		<setting id="ABCVideoResolver_enabled" type="bool" label="Enabled" default="true"/>
+		<setting id="ABCVideoResolver_login" type="bool" label="login" default="true" visible="false"/>
+		<setting label="AdultSwim" type="lsep"/>
+		<setting id="AdultSwimResolver_priority" type="number" label="Priority" default="100"/>
+		<setting id="AdultSwimResolver_enabled" type="bool" label="Enabled" default="true"/>
+		<setting id="AdultSwimResolver_login" type="bool" label="login" default="true" visible="false"/>
+		<setting label="aliez" type="lsep"/>
+		<setting id="AliezResolver_priority" type="number" label="Priority" default="100"/>
+		<setting id="AliezResolver_enabled" type="bool" label="Enabled" default="true"/>
+		<setting id="AliezResolver_login" type="bool" label="login" default="true" visible="false"/>
+		<setting label="fembed" type="lsep"/>
+		<setting id="FembedResolver_priority" type="number" label="Priority" default="100"/>
+		<setting id="FembedResolver_enabled" type="bool" label="Enabled" default="true"/>
+		<setting id="FembedResolver_login" type="bool" label="login" default="true" visible="false"/>
+		<setting label="generic" type="lsep"/>
+		<setting id="ResolveGeneric_priority" type="number" label="Priority" default="100"/>
+		<setting id="ResolveGeneric_enabled" type="bool" label="Enabled" default="true"/>
+		<setting id="ResolveGeneric_login" type="bool" label="login" default="true" visible="false"/>
+	</category>
+</settings>

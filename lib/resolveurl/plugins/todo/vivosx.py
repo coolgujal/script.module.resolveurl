@@ -13,12 +13,10 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 '''
 
-import re
-import urllib
+import re, urllib
 from lib import helpers
 from resolveurl import common
 from resolveurl.resolver import ResolveUrl, ResolverError
-
 
 def rot47(s):
     x = []
@@ -30,11 +28,10 @@ def rot47(s):
             x.append(s[i])
     return ''.join(x)
 
-
 class VivosxResolver(ResolveUrl):
     name = "vivosx"
     domains = ["vivo.sx"]
-    pattern = r'(?://|\.)(vivo\.sx)/(?:embed/)?([0-9a-zA-Z]+)'
+    pattern = '(?://|\.)(vivo\.sx)/([0-9a-zA-Z]+)'
 
     def __init__(self):
         self.net = common.Net()
@@ -45,12 +42,12 @@ class VivosxResolver(ResolveUrl):
                    'Referer': web_url}
         html = self.net.http_GET(web_url, headers=headers).content
 
-        r = re.search(r'''InitializeStream.+?source:\s*['"]([^'"]+)''', html, re.DOTALL)
+        r = re.findall('InitializeStream.*?source:\s{0,1}[\'|\"](.*?)[\'|\"],', html, re.S)
 
         if r:
-            return rot47(urllib.unquote(r.group(1))) + helpers.append_headers(headers)
+            return rot47(urllib.unquote(r[0])) + helpers.append_headers(headers)
 
         raise ResolverError('Video cannot be located.')
 
     def get_url(self, host, media_id):
-        return self._default_get_url(host, media_id, template='https://{host}/embed/{media_id}')
+        return 'https://vivo.sx/%s' % media_id

@@ -21,8 +21,8 @@ from resolveurl import common
 import re
 import xbmcgui
 import os
-import recaptcha_v2
-import helpers
+from . import recaptcha_v2
+from . import helpers
 
 net = common.Net()
 IMG_FILE = 'captcha_img.gif'

@@ -16,13 +16,13 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 import functools
-import log_utils
+from . import log_utils
 import time
 import pickle
 import hashlib
 import os
 import shutil
-import kodi
+from . import kodi
 
 logger = log_utils.Logger.get_logger(__name__)
 

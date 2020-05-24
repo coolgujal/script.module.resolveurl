@@ -13,14 +13,14 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 '''
 import re, json
-from lib import helpers
+from .lib import helpers
 from resolveurl import common
 from resolveurl.resolver import ResolveUrl, ResolverError
 
 class AdultSwimResolver(ResolveUrl):
     name = "AdultSwim"
     domains = ["adultswim.com"]
-    pattern = "(?://|\.)(adultswim\.com)/videos/((?!streams)[a-z\-]+/[a-z\-]+)"
+    pattern = r"(?://|\.)(adultswim\.com)/videos/((?!streams)[a-z\-]+/[a-z\-]+)"
 
     def __init__(self):
         self.net = common.Net()
@@ -32,13 +32,13 @@ class AdultSwimResolver(ResolveUrl):
         
         if html:
             try:
-                json_data = re.search("""__AS_INITIAL_DATA__\s*=\s*({.*?});""", html).groups()[0]
-                json_data = json_data.replace("\/", "/")
+                json_data = re.search(r"""__AS_INITIAL_DATA__\s*=\s*({.*?});""", html).groups()[0]
+                json_data = json_data.replace(r"\/", "/")
                 a = json.loads(json_data)
                 ep_id = a["show"]["sluggedVideo"]["id"]
                 api_url = 'http://www.adultswim.com/videos/api/v0/assets?platform=desktop&id=%s&phds=true' % ep_id
                 
-                return helpers.get_media_url(api_url, patterns=["""<file .*?type="(?P<label>[^"]+).+?>(?P<url>[^<\s]+)"""], result_blacklist=[".f4m"]).replace(' ', '%20')
+                return helpers.get_media_url(api_url, patterns=[r"""<file .*?type="(?P<label>[^"]+).+?>(?P<url>[^<\s]+)"""], result_blacklist=[".f4m"]).replace(' ', '%20')
                 
             except Exception as e:
                 raise ResolverError(e)

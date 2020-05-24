@@ -15,10 +15,10 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-import urllib2
-import urlparse
 import re
-import urllib
+from six.moves import urllib
+import six
+from six import text_type
 import traceback
 import resolveurl
 from resolveurl import common
@@ -116,10 +116,10 @@ class HostedMediaFile:
         return resolvers
     
     def __top_domain(self, url):
-        elements = urlparse.urlparse(url)
+        elements = urllib.parse.urlparse(url)
         domain = elements.netloc or elements.path
         domain = domain.split('@')[-1].split(':')[0]
-        regex = "(?:www\.)?([\w\-]*\.[\w\-]{2,5}(?:\.[\w\-]{2,5})?)$"
+        regex = r"(?:www\.)?([\w\-]*\.[\w\-]{2,5}(?:\.[\w\-]{2,5})?)$"
         res = re.search(regex, domain)
         if res: domain = res.group(1)
         domain = domain.lower()
@@ -190,7 +190,7 @@ class HostedMediaFile:
                             self._valid_url = True
                             return stream_url
             except Exception as e:
-                url = self._url.encode('utf-8') if isinstance(self._url, unicode) else self._url
+                url = self._url.encode('utf-8') if isinstance(self._url, text_type) and six.PY2 else self._url
                 common.logger.log_error('%s Error - From: %s Link: %s: %s' % (type(e).__name__, resolver.name, url, e))
                 if resolver == self.__resolvers[-1]:
                     common.logger.log_debug(traceback.format_exc())
@@ -240,7 +240,7 @@ class HostedMediaFile:
         try: headers = dict([item.split('=') for item in (stream_url.split('|')[1]).split('&')])
         except: headers = {}
         for header in headers:
-            headers[header] = urllib.unquote_plus(headers[header])
+            headers[header] = urllib.parse.unquote_plus(headers[header])
         common.logger.log_debug('Setting Headers on UrlOpen: %s' % headers)
 
         try:
@@ -248,19 +248,19 @@ class HostedMediaFile:
             ssl_context = ssl.create_default_context()
             ssl_context.check_hostname = False
             ssl_context.verify_mode = ssl.CERT_NONE
-            opener = urllib2.build_opener(urllib2.HTTPSHandler(context=ssl_context))
-            urllib2.install_opener(opener)
+            opener = urllib.request.build_opener(urllib.request.HTTPSHandler(context=ssl_context))
+            urllib.request.install_opener(opener)
         except:
             pass
 
         try:
             msg = ''
-            request = urllib2.Request(stream_url.split('|')[0], headers=headers)
+            request = urllib.request.Request(stream_url.split('|')[0], headers=headers)
             # only do a HEAD request. gujal
             request.get_method = lambda : 'HEAD'
             #  set urlopen timeout to 15 seconds
-            http_code = urllib2.urlopen(request, timeout=15).getcode()
-        except urllib2.URLError as e:
+            http_code = urllib.request.urlopen(request, timeout=15).getcode()
+        except urllib.request.URLError as e:
             if hasattr(e, 'reason'):
                 # treat an unhandled url type as success
                 if 'unknown url type' in str(e.reason).lower():
@@ -268,7 +268,7 @@ class HostedMediaFile:
                 else:
                     msg = e.reason
                     
-            if isinstance(e, urllib2.HTTPError):
+            if isinstance(e, urllib.request.HTTPError):
                 http_code = e.code
             else:
                 http_code = 600
