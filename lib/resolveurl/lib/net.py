@@ -23,10 +23,9 @@ import six
 from six import StringIO
 from six.moves import urllib
 from six import string_types
-from six import text_type
 import socket
 import time
-from . import kodi
+from resolveurl.lib import kodi
 
 # Set Global timeout - Useful for slow connections and Putlocker.
 socket.setdefaulttimeout(10)
@@ -44,9 +43,13 @@ RAND_UAS = ['Mozilla/5.0 ({win_ver}{feature}; rv:{br_ver}) Gecko/20100101 Firefo
             'Mozilla/5.0 ({win_ver}{feature}) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/{br_ver} Safari/537.36',
             'Mozilla/5.0 ({win_ver}{feature}; Trident/7.0; rv:{br_ver}) like Gecko',
             'Mozilla/5.0 (compatible; MSIE {br_ver}; {win_ver}{feature}; Trident/6.0)']
+
+
 def get_ua():
-    try: last_gen = int(kodi.get_setting('last_ua_create'))
-    except: last_gen = 0
+    try:
+        last_gen = int(kodi.get_setting('last_ua_create'))
+    except:
+        last_gen = 0
     if not kodi.get_setting('current_ua') or last_gen < (time.time() - (7 * 24 * 60 * 60)):
         index = random.randrange(len(RAND_UAS))
         versions = {'win_ver': random.choice(WIN_VERS), 'feature': random.choice(FEATURES), 'br_ver': random.choice(BR_VERS[index])}
@@ -57,6 +60,7 @@ def get_ua():
     else:
         user_agent = kodi.get_setting('current_ua')
     return user_agent
+
 
 class Net:
     '''
@@ -320,6 +324,7 @@ class Net:
         response = urllib.request.urlopen(req, timeout=15)
         return HttpResponse(response)
 
+
 class HttpResponse:
     '''
     This class represents a resoponse from an HTTP request.
@@ -331,8 +336,8 @@ class HttpResponse:
         :meth:`Net.http_GET`, :meth:`Net.http_HEAD` and :meth:`Net.http_POST`
     '''
 
-    content = ''
-    '''Unicode encoded string containing the body of the reposne.'''
+    # content = ''
+    '''Unicode encoded string containing the body of the reponse.'''
 
     def __init__(self, response):
         '''
@@ -365,8 +370,10 @@ class HttpResponse:
             encoding = r.group(1)
 
         if encoding is not None:
-            try: html = html.decode(encoding)
-            except: pass
+            try:
+                html = html.decode(encoding)
+            except:
+                pass
         return html
 
     def get_headers(self, as_dict=False):

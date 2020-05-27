@@ -20,7 +20,7 @@
 import re
 from six.moves import urllib
 import json
-from .lib import helpers
+from resolveurl.plugins.lib import helpers
 from resolveurl import common
 from resolveurl.common import i18n
 from resolveurl.resolver import ResolveUrl, ResolverError
@@ -214,11 +214,11 @@ class AllDebridResolver(ResolveUrl):
             js_data = json.loads(result)
             if js_data.get('status', False) == "success":
                 js_data = js_data.get('data')
-                regexes = [value.get('regexp') for key, value in js_data.get('hosts', {}).items()
+                regexes = [value.get('regexp') for _, value in js_data.get('hosts', {}).items()
                            if value.get('status', False)]
                 hosters = [re.compile(regex) for regex in regexes]
                 logger.log_debug('AllDebrid hosters : {0}'.format(len(hosters)))
-                regexes = [value.get('regexp') for key, value in js_data.get('streams', {}).items()]
+                regexes = [value.get('regexp') for _, value in js_data.get('streams', {}).items()]
                 streamers = []
                 for regex in regexes:
                     try:

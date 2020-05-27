@@ -17,11 +17,11 @@
 """
 import os
 import hashlib
-from .lib import log_utils
-from .lib.net import Net, get_ua  # @UnusedImport
-from .lib import cache  # @UnusedImport
-from .lib import kodi
-from .lib import pyaes
+from resolveurl.lib import log_utils
+from resolveurl.lib.net import Net, get_ua  # @UnusedImport
+from resolveurl.lib import cache  # @UnusedImport
+from resolveurl.lib import kodi
+from resolveurl.lib import pyaes
 from random import choice
 
 logger = log_utils.Logger.get_logger()

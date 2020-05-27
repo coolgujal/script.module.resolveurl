@@ -18,7 +18,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-from .__resolve_generic__ import ResolveGeneric
+from resolveurl.plugins.__resolve_generic__ import ResolveGeneric
 
 
 class ABCVideoResolver(ResolveGeneric):
@@ -27,4 +27,4 @@ class ABCVideoResolver(ResolveGeneric):
     pattern = r'(?://|\.)(abcvideo\.cc)/(?:embed-)?([0-9a-zA-Z]+)'
 
     def get_url(self, host, media_id):
-        return self._default_get_url(host, media_id, template='https://{host}/{media_id}.html')
+        return self._default_get_url(host, media_id, template='https://{host}/embed-{media_id}.html')

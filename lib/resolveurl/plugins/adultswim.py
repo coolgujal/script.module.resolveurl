@@ -12,10 +12,12 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 '''
-import re, json
-from .lib import helpers
+import re
+import json
+from resolveurl.plugins.lib import helpers
 from resolveurl import common
 from resolveurl.resolver import ResolveUrl, ResolverError
+
 
 class AdultSwimResolver(ResolveUrl):
     name = "AdultSwim"
@@ -29,7 +31,7 @@ class AdultSwimResolver(ResolveUrl):
         web_url = self.get_url(host, media_id)
         headers = {'User-Agent': common.FF_USER_AGENT}
         html = self.net.http_GET(web_url, headers=headers).content
-        
+
         if html:
             try:
                 json_data = re.search(r"""__AS_INITIAL_DATA__\s*=\s*({.*?});""", html).groups()[0]
@@ -37,12 +39,12 @@ class AdultSwimResolver(ResolveUrl):
                 a = json.loads(json_data)
                 ep_id = a["show"]["sluggedVideo"]["id"]
                 api_url = 'http://www.adultswim.com/videos/api/v0/assets?platform=desktop&id=%s&phds=true' % ep_id
-                
+
                 return helpers.get_media_url(api_url, patterns=[r"""<file .*?type="(?P<label>[^"]+).+?>(?P<url>[^<\s]+)"""], result_blacklist=[".f4m"]).replace(' ', '%20')
-                
+
             except Exception as e:
                 raise ResolverError(e)
-                
+
         raise ResolverError('Video not found')
 
     def get_url(self, host, media_id):

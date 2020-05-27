@@ -27,6 +27,7 @@ from resolveurl import common
 logger = common.log_utils.Logger.get_logger(__name__)
 logger.disable()
 
+
 class cInputWindow(xbmcgui.WindowDialog):
 
     def __init__(self, *args, **kwargs):
@@ -131,6 +132,7 @@ class cInputWindow(xbmcgui.WindowDialog):
             self.cancelled = True
             self.close()
 
+
 class UnCaptchaReCaptcha:
     net = common.Net()
 
@@ -146,7 +148,7 @@ class UnCaptchaReCaptcha:
             if not message:
                 message = re.findall('<div[^>]+class="fbc-imageselect-message-error">(.*?)</div>', html)
             if not message:
-                token = re.findall('"this\.select\(\)">(.*?)</textarea>', html)[0]
+                token = re.findall(r'"this\.select\(\)">(.*?)</textarea>', html)[0]
                 if token:
                     logger.log_debug('Captcha Success: %s' % (token))
                 else:
@@ -156,7 +158,7 @@ class UnCaptchaReCaptcha:
                 message = message[0]
                 payload = payload[0]
 
-            cval = re.findall('name="c"\s+value="([^"]+)', html)[0]
+            cval = re.findall(r'name="c"\s+value="([^"]+)', html)[0]
             captcha_imgurl = 'https://www.google.com%s' % (payload.replace('&amp;', '&'))
             message = re.sub('</?(div|strong)[^>]*>', '', message)
             oSolver = cInputWindow(captcha=captcha_imgurl, msg=message, iteration=iteration)

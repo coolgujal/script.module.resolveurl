@@ -17,13 +17,13 @@
 """
 import re
 import abc
-from .lib import helpers
+from resolveurl.plugins.lib import helpers
 from resolveurl.resolver import ResolveUrl
 
 
 class ResolveGeneric(ResolveUrl):
     __metaclass__ = abc.ABCMeta
-    
+
     """
     Generic Resolver
     ___

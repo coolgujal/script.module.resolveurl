@@ -17,6 +17,7 @@
 
     reusable captcha methods
 """
+from __future__ import absolute_import
 from resolveurl import common
 import re
 import xbmcgui

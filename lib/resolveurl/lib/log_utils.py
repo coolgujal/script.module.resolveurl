@@ -19,9 +19,10 @@ import json
 import xbmc
 import xbmcaddon
 import six
-from xbmc import LOGDEBUG, LOGERROR, LOGFATAL, LOGINFO, LOGNONE, LOGNOTICE, LOGSEVERE, LOGWARNING  # @UnusedImport
+from xbmc import LOGDEBUG, LOGERROR, LOGNOTICE, LOGWARNING
 
 addonsmr = xbmcaddon.Addon('script.module.resolveurl')
+
 
 def execute_jsonrpc(command):
     if not isinstance(command, six.string_types):
@@ -29,14 +30,16 @@ def execute_jsonrpc(command):
     response = xbmc.executeJSONRPC(command)
     return json.loads(response)
 
+
 def _is_debugging():
     command = {'jsonrpc': '2.0', 'id': 1, 'method': 'Settings.getSettings', 'params': {'filter': {'section': 'system', 'category': 'logging'}}}
     js_data = execute_jsonrpc(command)
     for item in js_data.get('result', {}).get('settings', {}):
         if item['id'] == 'debug.showloginfo':
             return item['value']
-    
+
     return False
+
 
 class Logger(object):
     __loggers = {}
@@ -44,22 +47,22 @@ class Logger(object):
     __addon_debug = addonsmr.getSetting('addon_debug') == 'true'
     __debug_on = _is_debugging()
     __disabled = set()
-    
+
     @staticmethod
     def get_logger(name=None):
         if name not in Logger.__loggers:
             Logger.__loggers[name] = Logger()
-        
+
         return Logger.__loggers[name]
-        
+
     def disable(self):
         if self not in Logger.__disabled:
             Logger.__disabled.add(self)
-    
+
     def enable(self):
         if self in Logger.__disabled:
             Logger.__disabled.remove(self)
-            
+
     def log(self, msg, level=LOGDEBUG):
         # if debug isn't on, skip disabled loggers unless addon_debug is on
         if not self.__debug_on:
@@ -70,25 +73,27 @@ class Logger(object):
                     level = LOGNOTICE
                 else:
                     return
-        
+
         try:
             if isinstance(msg, six.text_type) and six.PY2:
                 msg = '%s (ENCODED)' % (msg.encode('utf-8'))
-    
+
             xbmc.log('%s: %s' % (self.__name, msg), level)
-                
+
         except Exception as e:
-            try: xbmc.log('Logging Failure: %s' % (e), level)
-            except: pass  # just give up
-    
+            try:
+                xbmc.log('Logging Failure: %s' % (e), level)
+            except:
+                pass  # just give up
+
     def log_debug(self, msg):
         self.log(msg, level=LOGDEBUG)
-    
+
     def log_notice(self, msg):
         self.log(msg, level=LOGNOTICE)
-    
+
     def log_warning(self, msg):
         self.log(msg, level=LOGWARNING)
-    
+
     def log_error(self, msg):
         self.log(msg, level=LOGERROR)

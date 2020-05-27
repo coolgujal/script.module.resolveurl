@@ -17,7 +17,7 @@
 '''
 import json
 import re
-from .lib import helpers
+from resolveurl.plugins.lib import helpers
 from resolveurl import common
 from resolveurl.resolver import ResolveUrl, ResolverError
 
