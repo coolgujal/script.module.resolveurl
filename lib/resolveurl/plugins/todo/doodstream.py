@@ -19,7 +19,7 @@ import re
 import random
 import string
 import time
-from lib import helpers
+from resolveurl.plugins.lib import helpers
 from resolveurl import common
 from resolveurl.resolver import ResolveUrl, ResolverError
 

@@ -319,6 +319,8 @@ class CountdownDialog(object):
         self.heading = heading
         self.countdown = countdown
         self.interval = interval
+        self.line1 = line1
+        self.line2 = line2
         self.line3 = line3
         if active:
             if xbmc.getCondVisibility('Window.IsVisible(progressdialog)'):
@@ -362,13 +364,13 @@ class CountdownDialog(object):
             interval = self.interval
             while time_left > 0:
                 for _ in range(CountdownDialog.__INTERVALS):
-                    sleep(interval * 1000 / CountdownDialog.__INTERVALS)
+                    sleep(int(interval * 1000 / CountdownDialog.__INTERVALS))
                     if self.is_canceled():
                         return
                     time_left = expires - int(time.time() - start)
                     if time_left < 0:
                         time_left = 0
-                    progress = time_left * 100 / expires
+                    progress = int(time_left * 100 / expires)
                     line3 = 'Expires in: %s seconds' % time_left if not self.line3 else ''
                     self.update(progress, line3=line3)
 
@@ -383,6 +385,12 @@ class CountdownDialog(object):
             return self.pd.iscanceled()
 
     def update(self, percent, line1='', line2='', line3=''):
+        if not line1:
+            line1 = self.line1
+        if not line2:
+            line2 = self.line2
+        if not line3:
+            line3 = self.line3
         if self.pd is not None:
             if six.PY2:
                 self.pd.update(percent, line1, line2, line3)
