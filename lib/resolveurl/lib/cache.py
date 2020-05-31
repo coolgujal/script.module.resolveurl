@@ -22,6 +22,7 @@ import pickle
 import hashlib
 import os
 import shutil
+import six
 from resolveurl.lib import kodi
 
 logger = log_utils.Logger.get_logger(__name__)
@@ -81,7 +82,10 @@ def _save_func(name, args=None, kwargs=None, result=None):
 
 
 def _get_filename(name, args, kwargs):
-    arg_hash = hashlib.md5(name).hexdigest() + hashlib.md5(str(args)).hexdigest() + hashlib.md5(str(kwargs)).hexdigest()
+    if six.PY2:
+        arg_hash = hashlib.md5(name).hexdigest() + hashlib.md5(str(args)).hexdigest() + hashlib.md5(str(kwargs)).hexdigest()
+    else:
+        arg_hash = hashlib.md5(name.encode('utf8')).hexdigest() + hashlib.md5(str(args).encode('utf8')).hexdigest() + hashlib.md5(str(kwargs).encode('utf8')).hexdigest()
     return arg_hash
 
 
