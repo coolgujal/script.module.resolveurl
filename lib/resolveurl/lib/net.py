@@ -1,4 +1,4 @@
-'''
+"""
     common XBMC Module
     Copyright (C) 2011 t0mm0
 
@@ -14,15 +14,13 @@
 
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
-'''
+"""
 import random
 from six.moves import http_cookiejar
 import gzip
 import re
 import six
-from six import StringIO
 from six.moves import urllib
-from six import string_types
 import socket
 import time
 from resolveurl.lib import kodi
@@ -63,7 +61,7 @@ def get_ua():
 
 
 class Net:
-    '''
+    """
     This class wraps :mod:`urllib2` and provides an easy way to make http
     requests while taking care of cookies, proxies, gzip compression and
     character encoding.
@@ -74,7 +72,7 @@ class Net:
         net = Net()
         response = net.http_GET('http://xbmc.org')
         print response.content
-    '''
+    """
 
     _cj = http_cookiejar.LWPCookieJar()
     _proxy = None
@@ -82,7 +80,7 @@ class Net:
     _http_debug = False
 
     def __init__(self, cookie_file='', proxy='', user_agent='', ssl_verify=True, http_debug=False):
-        '''
+        """
         Kwargs:
             cookie_file (str): Full path to a file to be used to load and save
             cookies to.
@@ -95,7 +93,7 @@ class Net:
 
             http_debug (bool): Set ``True`` to have HTTP header info written to
             the XBMC log for all requests.
-        '''
+        """
         if cookie_file:
             self.set_cookies(cookie_file)
         if proxy:
@@ -107,13 +105,13 @@ class Net:
         self._update_opener()
 
     def set_cookies(self, cookie_file):
-        '''
+        """
         Set the cookie file and try to load cookies from it if it exists.
 
         Args:
             cookie_file (str): Full path to a file to be used to load and save
             cookies to.
-        '''
+        """
         try:
             self._cj.load(cookie_file, ignore_discard=True)
             self._update_opener()
@@ -122,50 +120,50 @@ class Net:
             return False
 
     def get_cookies(self, as_dict=False):
-        '''Returns A dictionary containing all cookie information by domain.'''
+        """Returns A dictionary containing all cookie information by domain."""
         if as_dict:
             return dict((cookie.name, cookie.value) for cookie in self._cj)
         else:
             return self._cj._cookies
 
     def save_cookies(self, cookie_file):
-        '''
+        """
         Saves cookies to a file.
 
         Args:
             cookie_file (str): Full path to a file to save cookies to.
-        '''
+        """
         self._cj.save(cookie_file, ignore_discard=True)
 
     def set_proxy(self, proxy):
-        '''
+        """
         Args:
             proxy (str): Proxy setting (eg.
             ``'http://user:pass@example.com:1234'``)
-        '''
+        """
         self._proxy = proxy
         self._update_opener()
 
     def get_proxy(self):
-        '''Returns string containing proxy details.'''
+        """Returns string containing proxy details."""
         return self._proxy
 
     def set_user_agent(self, user_agent):
-        '''
+        """
         Args:
             user_agent (str): String to use as the User Agent header.
-        '''
+        """
         self._user_agent = user_agent
 
     def get_user_agent(self):
-        '''Returns user agent string.'''
+        """Returns user agent string."""
         return self._user_agent
 
     def _update_opener(self):
-        '''
+        """
         Builds and installs a new opener to be used by all future calls to
         :func:`urllib2.urlopen`.
-        '''
+        """
         handlers = [urllib.request.HTTPCookieProcessor(self._cj), urllib.request.HTTPBasicAuthHandler()]
 
         if self._http_debug:
@@ -199,7 +197,7 @@ class Net:
         urllib.request.install_opener(opener)
 
     def http_GET(self, url, headers={}, compression=True):
-        '''
+        """
         Perform an HTTP GET request.
 
         Args:
@@ -215,11 +213,11 @@ class Net:
         Returns:
             An :class:`HttpResponse` object containing headers and other
             meta-information about the page and the page content.
-        '''
+        """
         return self._fetch(url, headers=headers, compression=compression)
 
     def http_POST(self, url, form_data, headers={}, compression=True):
-        '''
+        """
         Perform an HTTP POST request.
 
         Args:
@@ -237,11 +235,11 @@ class Net:
         Returns:
             An :class:`HttpResponse` object containing headers and other
             meta-information about the page and the page content.
-        '''
+        """
         return self._fetch(url, form_data, headers=headers, compression=compression)
 
     def http_HEAD(self, url, headers={}):
-        '''
+        """
         Perform an HTTP HEAD request.
 
         Args:
@@ -254,7 +252,7 @@ class Net:
         Returns:
             An :class:`HttpResponse` object containing headers and other
             meta-information about the page.
-        '''
+        """
         request = urllib.request.Request(url)
         request.get_method = lambda: 'HEAD'
         request.add_header('User-Agent', self._user_agent)
@@ -264,7 +262,7 @@ class Net:
         return HttpResponse(response)
 
     def http_DELETE(self, url, headers={}):
-        '''
+        """
         Perform an HTTP DELETE request.
 
         Args:
@@ -277,7 +275,7 @@ class Net:
         Returns:
             An :class:`HttpResponse` object containing headers and other
             meta-information about the page.
-        '''
+        """
         request = urllib.request.Request(url)
         request.get_method = lambda: 'DELETE'
         request.add_header('User-Agent', self._user_agent)
@@ -287,7 +285,7 @@ class Net:
         return HttpResponse(response)
 
     def _fetch(self, url, form_data={}, headers={}, compression=True):
-        '''
+        """
         Perform an HTTP GET or POST request.
 
         Args:
@@ -306,10 +304,10 @@ class Net:
         Returns:
             An :class:`HttpResponse` object containing headers and other
             meta-information about the page and the page content.
-        '''
+        """
         req = urllib.request.Request(url)
         if form_data:
-            if isinstance(form_data, string_types):
+            if isinstance(form_data, six.string_types):
                 form_data = form_data
             else:
                 form_data = urllib.parse.urlencode(form_data, True)
@@ -326,7 +324,7 @@ class Net:
 
 
 class HttpResponse:
-    '''
+    """
     This class represents a resoponse from an HTTP request.
 
     The content is examined and every attempt is made to properly encode it to
@@ -334,27 +332,26 @@ class HttpResponse:
 
     .. seealso::
         :meth:`Net.http_GET`, :meth:`Net.http_HEAD` and :meth:`Net.http_POST`
-    '''
+    """
 
     # content = ''
-    '''Unicode encoded string containing the body of the reponse.'''
+    """Unicode encoded string containing the body of the reponse."""
 
     def __init__(self, response):
-        '''
+        """
         Args:
             response (:class:`mimetools.Message`): The object returned by a call
             to :func:`urllib2.urlopen`.
-        '''
+        """
         self._response = response
 
     @property
     def content(self):
         html = self._response.read()
-        html = html.decode('latin-1') if six.PY3 else html
         encoding = None
         try:
             if self._response.headers['content-encoding'].lower() == 'gzip':
-                html = gzip.GzipFile(fileobj=StringIO.StringIO(html)).read()
+                html = gzip.GzipFile(fileobj=six.BytesIO(html)).read()
         except:
             pass
 
@@ -365,9 +362,9 @@ class HttpResponse:
         except:
             pass
 
-        r = re.search(r'<meta\s+http-equiv="Content-Type"\s+content="(?:.+?);\s+charset=(.+?)"', html, re.IGNORECASE)
-        if r:
-            encoding = r.group(1)
+        # r = re.search(r'<meta\s+http-equiv="Content-Type"\s+content="(?:.+?);\s+charset=(.+?)"', html, re.IGNORECASE)
+        # if r:
+        #     encoding = r.group(1)
 
         if encoding is not None:
             try:
@@ -377,16 +374,16 @@ class HttpResponse:
         return html
 
     def get_headers(self, as_dict=False):
-        '''Returns headers returned by the server.
-        If as_dict is True, headers are returned as a dictionary otherwise a list'''
+        """Returns headers returned by the server.
+        If as_dict is True, headers are returned as a dictionary otherwise a list"""
         if as_dict:
             return dict([(item[0].title(), item[1]) for item in list(self._response.info().items())])
         else:
-            return self._response.info().headers
+            return self._response.info()._headers
 
     def get_url(self):
-        '''
+        """
         Return the URL of the resource retrieved, commonly used to determine if
         a redirect was followed.
-        '''
+        """
         return self._response.geturl()
