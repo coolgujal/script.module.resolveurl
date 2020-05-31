@@ -59,9 +59,12 @@ def _get_func(name, args=None, kwargs=None, cache_limit=1):
     if os.path.exists(full_path):
         mtime = os.path.getmtime(full_path)
         if mtime >= max_age:
-            with open(full_path, 'r') as f:
-                pickled_result = f.read()
-            # logger.log('Returning cached result: |%s|%s|%s| - modtime: %s max_age: %s age: %ss' % (name, args, kwargs, mtime, max_age, now - mtime), log_utils.LOGDEBUG)
+            if six.PY2:
+                with open(full_path, 'r') as f:
+                    pickled_result = f.read()
+            else:
+                with open(full_path, 'rb') as f:
+                    pickled_result = f.read()
             return True, pickle.loads(pickled_result)
 
     return False, None
@@ -75,8 +78,12 @@ def _save_func(name, args=None, kwargs=None, result=None):
             kwargs = {}
         pickled_result = pickle.dumps(result)
         full_path = os.path.join(cache_path, _get_filename(name, args, kwargs))
-        with open(full_path, 'w') as f:
-            f.write(pickled_result)
+        if six.PY2:
+            with open(full_path, 'w') as f:
+                f.write(pickled_result)
+        else:
+            with open(full_path, 'wb') as f:
+                f.write(pickled_result)
     except Exception as e:
         logger.log('Failure during cache write: %s' % (e), log_utils.LOGWARNING)
 
