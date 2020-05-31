@@ -108,7 +108,7 @@ class GoogleResolver(ResolveUrl):
                 msg = 'Daily view limit reached'
                 common.kodi.notify(header=None, msg=msg, duration=3000)
                 raise ResolverError(msg)
-        response_headers = dict([(item[0].title(), item[1]) for item in response.info().items()])
+        response_headers = dict([(item[0].title(), item[1]) for item in list(response.info().items())])
         cookie = response_headers.get('Set-Cookie', None)
         if cookie:
             self.headers.update({'Cookie': cookie})

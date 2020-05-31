@@ -268,7 +268,7 @@ class DebridLinkResolver(ResolveUrl):
             if js_data.get('success', False):
                 hosts = js_data.get('value')
                 if self.get_setting('torrents') == 'true':
-                    hosts.extend([u'torrent', u'magnet'])
+                    hosts.extend(['torrent', 'magnet'])
                 logger.log_debug('Debrid-Link hosts : {0}'.format(hosts))
             else:
                 logger.log_error('Error getting DL Hosts')

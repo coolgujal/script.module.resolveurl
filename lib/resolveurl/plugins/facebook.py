@@ -39,7 +39,7 @@ class FacebookResolver(ResolveUrl):
             raise ResolverError(err_message)
 
         videoUrl = re.compile('"(?:hd_src|sd_src)":"(.+?)"').findall(html)
-        videoUrl = [urllib.parse.unquote(i.replace('\u0025', '%')).decode('utf-8') for i in videoUrl]
+        videoUrl = [urllib.parse.unquote(i.replace('\\u0025', '%')).decode('utf-8') for i in videoUrl]
         videoUrl = [i.replace('\\', '') for i in videoUrl]
 
         vUrl = ''

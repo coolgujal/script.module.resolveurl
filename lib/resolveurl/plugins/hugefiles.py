@@ -56,10 +56,12 @@ class HugefilesResolver(ResolveUrl):
         data['referer'] = web_url
         headers = {'User-Agent': common.EDGE_USER_AGENT}
         logger.log_debug('HugeFiles - Requesting POST URL: %s with data: %s' % (web_url, data))
-        request = urllib2.Request(web_url, data=urllib.urlencode(data), headers=headers)
+        request = urllib.request.Request(web_url, data=urllib.parse.urlencode(data), headers=headers)
 
-        try: stream_url = urllib2.urlopen(request).geturl()
-        except: return
+        try:
+            stream_url = urllib.request.urlopen(request).geturl()
+        except:
+            return
 
         logger.log_debug('Hugefiles stream Found: %s' % stream_url)
         return stream_url
