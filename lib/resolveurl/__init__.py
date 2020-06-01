@@ -28,11 +28,10 @@ For most cases you probably want to use :func:`resolveurl.resolve` or
 """
 import re
 from six.moves import urllib
-from six import string_types
+import six
 import sys
-import os
 import xbmc  # @UnusedImport
-import xbmcvfs  # @UnusedImport
+import xbmcvfs
 import xbmcgui
 from resolveurl import common
 from resolveurl.hmf import HostedMediaFile
@@ -49,7 +48,7 @@ host_cache = {}
 
 def add_plugin_dirs(dirs):
     global PLUGIN_DIRS
-    if isinstance(dirs, string_types):
+    if isinstance(dirs, six.string_types):
         PLUGIN_DIRS.append(dirs)
     else:
         PLUGIN_DIRS += dirs
@@ -59,7 +58,7 @@ def load_external_plugins():
     for d in PLUGIN_DIRS:
         common.logger.log_debug('Adding plugin path: %s' % d)
         sys.path.insert(0, d)
-        for filename in os.listdir(d):
+        for filename in xbmcvfs.listdir(d)[1]:
             if not filename.startswith('__') and filename.endswith('.py'):
                 mod_name = filename[:-3]
                 imp = __import__(mod_name, globals(), locals())
@@ -71,7 +70,7 @@ def relevant_resolvers(domain=None, include_universal=None, include_popups=None,
     if include_external:
         load_external_plugins()
 
-    if isinstance(domain, string_types):
+    if isinstance(domain, six.string_types):
         domain = domain.lower()
 
     if include_universal is None:
@@ -199,7 +198,7 @@ def scrape_supported(html, regex=None, host_only=False):
 
     args:
         html: the html to be scraped
-        regex: an optional argument to override the default regex which is: href\s*=\s*["']([^'"]+
+        regex: an optional argument to override the default regex which is: href *= *["']([^'"]+
         host_only: an optional argument if true to do only host validation vs full url validation (default False)
 
     Returns:
@@ -255,7 +254,7 @@ def _update_settings_xml():
     all settings for this addon and its plugins.
     """
     try:
-        os.makedirs(os.path.dirname(common.settings_file))
+        xbmcvfs.mkdirs(common.settings_path)
     except OSError:
         pass
 

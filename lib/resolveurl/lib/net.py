@@ -18,7 +18,7 @@
 import random
 from six.moves import http_cookiejar
 import gzip
-import re
+# import re
 import six
 from six.moves import urllib
 import socket

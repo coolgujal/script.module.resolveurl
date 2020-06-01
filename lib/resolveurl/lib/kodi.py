@@ -21,7 +21,6 @@ import xbmcgui
 import xbmc
 import xbmcvfs
 from six.moves import urllib
-from six import string_types
 import six
 import sys
 import os
@@ -50,7 +49,7 @@ def translate_path(path):
 
 
 def set_setting(id, value):
-    if not isinstance(value, string_types):
+    if not isinstance(value, six.string_types):
         value = str(value)
     addon.setSetting(id, value)
 
