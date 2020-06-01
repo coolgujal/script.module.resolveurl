@@ -370,10 +370,7 @@ class HttpResponse:
             encoding = r.group(1)
 
         if encoding is not None:
-            try:
-                html = html.decode(encoding)
-            except:
-                pass
+            html = html.decode(encoding, errors='ignore')
         else:
             html = html.decode('ascii') if six.PY3 else html
         return html
