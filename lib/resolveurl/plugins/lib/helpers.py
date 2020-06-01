@@ -15,10 +15,9 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-from __future__ import absolute_import
 import re
 import xbmcgui
-from . import jsunpack
+from resolveurl.plugins.lib import jsunpack
 import six
 from six.moves import urllib
 from resolveurl import common

@@ -372,7 +372,7 @@ class HttpResponse:
         if encoding is not None:
             html = html.decode(encoding, errors='ignore')
         else:
-            html = html.decode('ascii') if six.PY3 else html
+            html = html.decode('ascii', errors='ignore') if six.PY3 else html
         return html
 
     def get_headers(self, as_dict=False):

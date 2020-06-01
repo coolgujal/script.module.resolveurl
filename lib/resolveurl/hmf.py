@@ -264,6 +264,11 @@ class HostedMediaFile:
             request.get_method = lambda: 'HEAD'
             #  set urlopen timeout to 15 seconds
             http_code = urllib.request.urlopen(request, timeout=15).getcode()
+        except urllib.error.HTTPError as e:
+            if isinstance(e, urllib.error.HTTPError):
+                http_code = e.code
+            else:
+                http_code = 600
         except urllib.error.URLError as e:
             if hasattr(e, 'reason'):
                 # treat an unhandled url type as success
@@ -271,10 +276,6 @@ class HostedMediaFile:
                     return True
                 else:
                     msg = e.reason
-            if isinstance(e, urllib.error.HTTPError):
-                http_code = e.HTTPError.code
-            else:
-                http_code = 600
             if not msg:
                 msg = str(e)
         except Exception as e:
