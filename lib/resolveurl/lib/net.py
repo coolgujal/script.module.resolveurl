@@ -18,7 +18,7 @@
 import random
 from six.moves import http_cookiejar
 import gzip
-# import re
+import re
 import six
 from six.moves import urllib
 import socket
@@ -362,15 +362,20 @@ class HttpResponse:
         except:
             pass
 
-        # r = re.search(r'<meta\s+http-equiv="Content-Type"\s+content="(?:.+?);\s+charset=(.+?)"', html, re.IGNORECASE)
-        # if r:
-        #     encoding = r.group(1)
+        epattern = r'<meta\s+http-equiv="Content-Type"\s+content="(?:.+?);\s+charset=(.+?)"'
+        epattern = epattern.encode('utf8') if six.PY3 else epattern
+        r = re.search(epattern, html, re.IGNORECASE)
+
+        if r:
+            encoding = r.group(1)
 
         if encoding is not None:
             try:
                 html = html.decode(encoding)
             except:
                 pass
+        else:
+            html = html.decode('ascii') if six.PY3 else html
         return html
 
     def get_headers(self, as_dict=False):
