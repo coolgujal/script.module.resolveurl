@@ -250,6 +250,9 @@ def has_addon(addon_id):
 
 class ProgressDialog(object):
     def __init__(self, heading, line1='', line2='', line3='', background=False, active=True, timer=0):
+        self.line1 = line1
+        self.line2 = line2
+        self.line3 = line3
         self.begin = time.time()
         self.timer = timer
         self.background = background
@@ -294,6 +297,12 @@ class ProgressDialog(object):
             return False
 
     def update(self, percent, line1='', line2='', line3=''):
+        if not line1:
+            line1 = self.line1
+        if not line2:
+            line2 = self.line2
+        if not line3:
+            line3 = self.line3
         if self.pd is None and self.timer and (time.time() - self.begin) >= self.timer:
             self.pd = self.__create_dialog(line1, line2, line3)
 
