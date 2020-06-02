@@ -16,7 +16,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 import re
-from six.moves import urllib
+from six.moves import urllib_error
 import json
 from resolveurl.plugins.lib import helpers
 from resolveurl import common
@@ -146,7 +146,7 @@ class RealDebridResolver(ResolveUrl):
             url = '%s/%s' % (rest_base_url, unrestrict_link_path)
             data = {'link': media_id}
             result = self.net.http_POST(url, form_data=data, headers=self.headers).content
-        except urllib.error.HTTPError as e:
+        except urllib_error.HTTPError as e:
             if not retry and e.code == 401:
                 if self.get_setting('refresh'):
                     self.refresh_token()

@@ -18,7 +18,7 @@
 """
 
 import re
-from six.moves import urllib
+from six.moves import urllib_parse, urllib_error
 import json
 from resolveurl.plugins.lib import helpers
 from resolveurl import common
@@ -69,9 +69,9 @@ class AllDebridResolver(ResolveUrl):
                     media_id = max(sources)[1]
                     self.__delete_transfer(transfer_id)
 
-            url = '{0}/link/unlock?agent={1}&apikey={2}&link={3}'.format(api_url, urllib.parse.quote_plus(AGENT), self.get_setting('token'), urllib.parse.quote_plus(media_id))
+            url = '{0}/link/unlock?agent={1}&apikey={2}&link={3}'.format(api_url, urllib_parse.quote_plus(AGENT), self.get_setting('token'), urllib_parse.quote_plus(media_id))
             result = self.net.http_GET(url, headers=self.headers).content
-        except urllib.error.HTTPError as e:
+        except urllib_error.HTTPError as e:
             try:
                 js_result = json.loads(e.read())
                 if 'error' in js_result:
@@ -96,7 +96,7 @@ class AllDebridResolver(ResolveUrl):
                     sources = [(str(source.get("quality")), source.get("id")) for source in sources if '+' not in source.get("id")]
                     sid = helpers.pick_source(helpers.sort_sources_list(sources))
                     url = '{0}/link/streaming?agent={1}&apikey={2}&id={3}&stream={4}' \
-                          .format(api_url, urllib.parse.quote_plus(AGENT), self.get_setting('token'), fid, sid)
+                          .format(api_url, urllib_parse.quote_plus(AGENT), self.get_setting('token'), fid, sid)
                     result = self.net.http_GET(url, headers=self.headers).content
                     js_data = json.loads(result)
                     if js_data.get('data').get('link'):
@@ -105,7 +105,7 @@ class AllDebridResolver(ResolveUrl):
         raise ResolverError('AllDebrid: no stream returned')
 
     def __check_cache(self, media_id):
-        url = '{0}/magnet/instant?agent={1}&apikey={2}&magnets[]={3}'.format(api_url, urllib.parse.quote_plus(AGENT), self.get_setting('token'), media_id.lower())
+        url = '{0}/magnet/instant?agent={1}&apikey={2}&magnets[]={3}'.format(api_url, urllib_parse.quote_plus(AGENT), self.get_setting('token'), media_id.lower())
         result = self.net.http_GET(url, headers=self.headers).content
         result = json.loads(result)
         if result.get('status', False) == "success":
@@ -118,7 +118,7 @@ class AllDebridResolver(ResolveUrl):
         return False
 
     def __list_transfer(self, transfer_id):
-        url = '{0}/magnet/status?agent={1}&apikey={2}&id={3}'.format(api_url, urllib.parse.quote_plus(AGENT), self.get_setting('token'), transfer_id)
+        url = '{0}/magnet/status?agent={1}&apikey={2}&id={3}'.format(api_url, urllib_parse.quote_plus(AGENT), self.get_setting('token'), transfer_id)
         result = json.loads(self.net.http_GET(url, headers=self.headers).content)
         if result.get('status', False) == "success":
             magnets = result.get('data').get('magnets')
@@ -132,7 +132,7 @@ class AllDebridResolver(ResolveUrl):
         return {}
 
     def __create_transfer(self, media_id):
-        url = '{0}/magnet/upload?agent={1}&apikey={2}&magnets[]={3}'.format(api_url, urllib.parse.quote_plus(AGENT), self.get_setting('token'), media_id)
+        url = '{0}/magnet/upload?agent={1}&apikey={2}&magnets[]={3}'.format(api_url, urllib_parse.quote_plus(AGENT), self.get_setting('token'), media_id)
         result = json.loads(self.net.http_GET(url, headers=self.headers).content)
         if result.get('status', False) == "success":
             logger.log_debug('Transfer successfully started to the AllDebrid cloud')
@@ -187,7 +187,7 @@ class AllDebridResolver(ResolveUrl):
 
     def __delete_transfer(self, transfer_id):
         try:
-            url = '{0}/magnet/delete?agent={1}&apikey={2}&id={3}'.format(api_url, urllib.parse.quote_plus(AGENT), self.get_setting('token'), transfer_id)
+            url = '{0}/magnet/delete?agent={1}&apikey={2}&id={3}'.format(api_url, urllib_parse.quote_plus(AGENT), self.get_setting('token'), transfer_id)
             response = self.net.http_GET(url, headers=self.headers).content
             result = json.loads(response)
             if result.get('status', False) == "success":
@@ -208,7 +208,7 @@ class AllDebridResolver(ResolveUrl):
     @common.cache.cache_method(cache_limit=8)
     def get_all_hosters(self):
         hosters = []
-        url = '{0}/user/hosts?agent={1}&apikey={2}'.format(api_url, urllib.parse.quote_plus(AGENT), self.get_setting('token'))
+        url = '{0}/user/hosts?agent={1}&apikey={2}'.format(api_url, urllib_parse.quote_plus(AGENT), self.get_setting('token'))
         try:
             result = self.net.http_GET(url, headers=self.headers).content
             js_data = json.loads(result)
@@ -237,7 +237,7 @@ class AllDebridResolver(ResolveUrl):
     @common.cache.cache_method(cache_limit=8)
     def get_hosts(self):
         hosts = []
-        url = '{0}/hosts/domains?agent={1}&apikey={2}'.format(api_url, urllib.parse.quote_plus(AGENT), self.get_setting('token'))
+        url = '{0}/hosts/domains?agent={1}&apikey={2}'.format(api_url, urllib_parse.quote_plus(AGENT), self.get_setting('token'))
         try:
             js_result = self.net.http_GET(url, headers=self.headers).content
             js_data = json.loads(js_result)
@@ -284,7 +284,7 @@ class AllDebridResolver(ResolveUrl):
         self.set_setting('token', '')
 
     def authorize_resolver(self):
-        url = '{0}/pin/get?agent={1}'.format(api_url, urllib.parse.quote_plus(AGENT))
+        url = '{0}/pin/get?agent={1}'.format(api_url, urllib_parse.quote_plus(AGENT))
         js_result = self.net.http_GET(url, headers=self.headers).content
         js_data = json.loads(js_result).get('data')
         line1 = 'Go to URL: {0}'.format(js_data.get('base_url'))

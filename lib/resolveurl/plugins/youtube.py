@@ -19,7 +19,7 @@ from resolveurl.resolver import ResolveUrl, ResolverError
 from resolveurl.lib import kodi
 from resolveurl.plugins.lib import helpers
 import re
-from six.moves import urllib
+from six.moves import urllib_parse
 from resolveurl import common
 
 try:
@@ -41,14 +41,14 @@ class YoutubeResolver(ResolveUrl):
         try:
             web_url = self.get_url(host, media_id)
             html = self.net.http_GET(web_url, headers=self.headers).content
-            stream_map = urllib.parse.unquote(re.findall('url_encoded_fmt_stream_map=([^&]+)', html)[0])
+            stream_map = urllib_parse.unquote(re.findall('url_encoded_fmt_stream_map=([^&]+)', html)[0])
             streams = stream_map.split(',')
             sources = []
             streams_mp4 = [item for item in streams if 'video%2Fmp4' in item]
             for stream in streams_mp4:
                 quality = re.findall('quality=([^&]+)', stream)[0]
                 url = re.findall('url=([^&]+)', stream)[0]
-                sources.append((quality, urllib.parse.unquote(url)))
+                sources.append((quality, urllib_parse.unquote(url)))
             if sources:
                 return helpers.pick_source(sources)
 

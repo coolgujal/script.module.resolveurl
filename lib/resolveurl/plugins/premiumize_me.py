@@ -16,7 +16,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 import re
-from six.moves import urllib
+from six.moves import urllib_parse, urllib_error
 import json
 from resolveurl.plugins.lib import helpers
 from resolveurl import common
@@ -156,7 +156,7 @@ class PremiumizeMeResolver(ResolveUrl):
         folder_id = self.__create_folder()
         if not folder_id == "":
             try:
-                data = urllib.parse.urlencode({'src': media_id, 'folder_id': folder_id})
+                data = urllib_parse.urlencode({'src': media_id, 'folder_id': folder_id})
                 response = self.net.http_POST(create_transfer_path, form_data=data, headers=self.headers).content
                 result = json.loads(response)
                 if 'status' in result:
@@ -186,7 +186,7 @@ class PremiumizeMeResolver(ResolveUrl):
     def __delete_transfer(self, transfer_id):
         if not transfer_id == "":
             try:
-                data = urllib.parse.urlencode({'id': transfer_id})
+                data = urllib_parse.urlencode({'id': transfer_id})
                 response = self.net.http_POST(delete_transfer_path, form_data=data, headers=self.headers).content
                 result = json.loads(response)
                 if 'status' in result:
@@ -228,7 +228,7 @@ class PremiumizeMeResolver(ResolveUrl):
 
     def __direct_dl(self, media_id, torrent=False):
         try:
-            data = urllib.parse.urlencode({'src': media_id})
+            data = urllib_parse.urlencode({'src': media_id})
             response = self.net.http_POST(direct_dl_path, form_data=data, headers=self.headers).content
             result = json.loads(response)
             if 'status' in result:
@@ -270,7 +270,7 @@ class PremiumizeMeResolver(ResolveUrl):
         folder_id = self.__list_folders()
         if folder_id == "":
             try:
-                data = urllib.parse.urlencode({'name': folder_name})
+                data = urllib_parse.urlencode({'name': folder_name})
                 response = self.net.http_POST(create_folder_path, form_data=data, headers=self.headers).content
                 result = json.loads(response)
                 if 'status' in result:
@@ -288,7 +288,7 @@ class PremiumizeMeResolver(ResolveUrl):
         folder_id = self.__list_folders()
         if not folder_id == "":
             try:
-                data = urllib.parse.urlencode({'id': folder_id})
+                data = urllib_parse.urlencode({'id': folder_id})
                 response = self.net.http_POST(delete_folder_path, form_data=data, headers=self.headers).content
                 result = json.loads(response)
                 if 'status' in result:
@@ -339,7 +339,7 @@ class PremiumizeMeResolver(ResolveUrl):
             js_result = json.loads(self.net.http_POST(token_path, form_data=data, headers=self.headers).content)
             logger.log_debug('Authorizing Premiumize.me Result: |%s|' % js_result)
             self.set_setting('token', js_result['access_token'])
-        except urllib.error.HTTPError as e:
+        except urllib_error.HTTPError as e:
             try:
                 js_result = json.loads(e.read())
                 if 'error' in js_result:

@@ -20,7 +20,7 @@ from six.moves import http_cookiejar
 import gzip
 import re
 import six
-from six.moves import urllib
+from six.moves import urllib_request, urllib_parse
 import socket
 import time
 from resolveurl.lib import kodi
@@ -164,15 +164,15 @@ class Net:
         Builds and installs a new opener to be used by all future calls to
         :func:`urllib2.urlopen`.
         """
-        handlers = [urllib.request.HTTPCookieProcessor(self._cj), urllib.request.HTTPBasicAuthHandler()]
+        handlers = [urllib_request.HTTPCookieProcessor(self._cj), urllib_request.HTTPBasicAuthHandler()]
 
         if self._http_debug:
-            handlers += [urllib.request.HTTPHandler(debuglevel=1)]
+            handlers += [urllib_request.HTTPHandler(debuglevel=1)]
         else:
-            handlers += [urllib.request.HTTPHandler()]
+            handlers += [urllib_request.HTTPHandler()]
 
         if self._proxy:
-            handlers += [urllib.request.ProxyHandler({'http': self._proxy})]
+            handlers += [urllib_request.ProxyHandler({'http': self._proxy})]
 
         try:
             import platform
@@ -187,14 +187,14 @@ class Net:
                 ctx.check_hostname = False
                 ctx.verify_mode = ssl.CERT_NONE
                 if self._http_debug:
-                    handlers += [urllib.request.HTTPSHandler(context=ctx, debuglevel=1)]
+                    handlers += [urllib_request.HTTPSHandler(context=ctx, debuglevel=1)]
                 else:
-                    handlers += [urllib.request.HTTPSHandler(context=ctx)]
+                    handlers += [urllib_request.HTTPSHandler(context=ctx)]
             except:
                 pass
 
-        opener = urllib.request.build_opener(*handlers)
-        urllib.request.install_opener(opener)
+        opener = urllib_request.build_opener(*handlers)
+        urllib_request.install_opener(opener)
 
     def http_GET(self, url, headers={}, compression=True):
         """
@@ -253,12 +253,12 @@ class Net:
             An :class:`HttpResponse` object containing headers and other
             meta-information about the page.
         """
-        request = urllib.request.Request(url)
+        request = urllib_request.Request(url)
         request.get_method = lambda: 'HEAD'
         request.add_header('User-Agent', self._user_agent)
         for key in headers:
             request.add_header(key, headers[key])
-        response = urllib.request.urlopen(request)
+        response = urllib_request.urlopen(request)
         return HttpResponse(response)
 
     def http_DELETE(self, url, headers={}):
@@ -276,12 +276,12 @@ class Net:
             An :class:`HttpResponse` object containing headers and other
             meta-information about the page.
         """
-        request = urllib.request.Request(url)
+        request = urllib_request.Request(url)
         request.get_method = lambda: 'DELETE'
         request.add_header('User-Agent', self._user_agent)
         for key in headers:
             request.add_header(key, headers[key])
-        response = urllib.request.urlopen(request)
+        response = urllib_request.urlopen(request)
         return HttpResponse(response)
 
     def _fetch(self, url, form_data={}, headers={}, compression=True):
@@ -305,21 +305,21 @@ class Net:
             An :class:`HttpResponse` object containing headers and other
             meta-information about the page and the page content.
         """
-        req = urllib.request.Request(url)
+        req = urllib_request.Request(url)
         if form_data:
             if isinstance(form_data, six.string_types):
                 form_data = form_data
             else:
-                form_data = urllib.parse.urlencode(form_data, True)
+                form_data = urllib_parse.urlencode(form_data, True)
             form_data = form_data.encode('utf-8') if six.PY3 else form_data
-            req = urllib.request.Request(url, form_data)
+            req = urllib_request.Request(url, form_data)
         req.add_header('User-Agent', self._user_agent)
         for key in headers:
             req.add_header(key, headers[key])
         if compression:
             req.add_header('Accept-Encoding', 'gzip')
         req.add_unredirected_header('Host', req.host)
-        response = urllib.request.urlopen(req, timeout=15)
+        response = urllib_request.urlopen(req, timeout=15)
         return HttpResponse(response)
 
 

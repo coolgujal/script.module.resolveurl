@@ -17,7 +17,7 @@
 """
 
 import re
-from six.moves import urllib
+from six.moves import urllib_parse
 from resolveurl.plugins.lib import helpers
 from resolveurl import common
 from resolveurl.resolver import ResolveUrl, ResolverError
@@ -38,7 +38,7 @@ class YourUploadResolver(ResolveUrl):
         r = re.search(r'file\s*:\s*(?:\'|\")(.+?)(?:\'|\")', html)
 
         if r:
-            url = urllib.parse.urljoin(web_url, r.group(1))
+            url = urllib_parse.urljoin(web_url, r.group(1))
             url = self.net.http_HEAD(url, headers=headers).get_url()
             url = url + helpers.append_headers(headers)
             return url

@@ -20,7 +20,7 @@ import xbmcplugin
 import xbmcgui
 import xbmc
 import xbmcvfs
-from six.moves import urllib
+from six.moves import urllib_parse
 import six
 import sys
 import os
@@ -138,12 +138,12 @@ def i18n(string_id):
 
 def get_plugin_url(queries):
     try:
-        query = urllib.parse.urlencode(queries)
+        query = urllib_parse.urlencode(queries)
     except UnicodeEncodeError:
         for k in queries:
             if isinstance(queries[k], six.text_type) and six.PY2:
                 queries[k] = queries[k].encode('utf-8')
-        query = urllib.parse.urlencode(queries)
+        query = urllib_parse.urlencode(queries)
 
     return sys.argv[0] + '?' + query
 
@@ -185,7 +185,7 @@ def parse_query(query):
     q = {'mode': 'main'}
     if query.startswith('?'):
         query = query[1:]
-    queries = urllib.parse.parse_qs(query)
+    queries = urllib_parse.parse_qs(query)
     for key in queries:
         if len(queries[key]) == 1:
             q[key] = queries[key][0]
