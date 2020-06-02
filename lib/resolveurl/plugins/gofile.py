@@ -16,6 +16,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 import json
+from six.moves import urllib_parse
 from resolveurl.plugins.lib import helpers
 from resolveurl import common
 from resolveurl.resolver import ResolveUrl, ResolverError
@@ -24,7 +25,7 @@ from resolveurl.resolver import ResolveUrl, ResolverError
 class GofileResolver(ResolveUrl):
     name = 'gofile'
     domains = ['gofile.io']
-    pattern = r'(?://|\.)(gofile\.io)/\?c=([0-9a-zA-Z]+)'
+    pattern = r'(?://|\.)(gofile\.io)/(?:\?c=|d/)([0-9a-zA-Z]+)'
 
     def __init__(self):
         self.net = common.Net()
@@ -38,7 +39,9 @@ class GofileResolver(ResolveUrl):
             sources = []
             if(download_url['data']['files']):
                 for file_index in download_url['data']['files']:
-                    sources += [(download_url['data']['files'][file_index]['name'], download_url['data']['files'][file_index]['link'])]
+                    url = urllib_parse.quote(download_url['data']['files'][file_index]['link'], ':/')
+                    size = download_url['data']['files'][file_index]['size']
+                    sources += [(size, url)]
             return helpers.pick_source(sources, False)
         raise ResolverError('Unable to locate video')
 

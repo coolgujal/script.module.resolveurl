@@ -17,7 +17,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 '''
 
 import re
-from six.moves import urllib
+from six.moves import urllib_parse
 from resolveurl import common
 from resolveurl.resolver import ResolveUrl, ResolverError
 
@@ -39,7 +39,7 @@ class FacebookResolver(ResolveUrl):
             raise ResolverError(err_message)
 
         videoUrl = re.compile('"(?:hd_src|sd_src)":"(.+?)"').findall(html)
-        videoUrl = [urllib.parse.unquote(i.replace('\\u0025', '%')) for i in videoUrl]
+        videoUrl = [urllib_parse.unquote(i.replace('\\u0025', '%')) for i in videoUrl]
         videoUrl = [i.replace('\\', '') for i in videoUrl]
 
         vUrl = ''

@@ -16,7 +16,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 import re
-from six.moves import urllib
+from six.moves import urllib_parse
 import json
 from resolveurl.plugins.lib import helpers
 from resolveurl import common
@@ -57,7 +57,7 @@ class CdaResolver(ResolveUrl):
         a = a.replace("_CXD", "")
         a = a.replace("_QWE", "")
         a = a.replace("_Q5", "")
-        a = urllib.parse.unquote(a)  # @change urllib.unquote >> urllib.parse.unquote
+        a = urllib_parse.unquote(a)
         a = ''.join([chr(33 + (ord(char) + 14) % 94) if 32 < ord(char) < 127 else char for char in a])
         a = a.replace(".cda.mp4", "")
         a = a.replace(".2cda.pl", ".cda.pl")

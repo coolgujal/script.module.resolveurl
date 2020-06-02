@@ -16,7 +16,11 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 '''
 
+<<<<<<< HEAD
 from six.moves import urllib
+=======
+from six.moves import urllib_parse
+>>>>>>> 2af46ce0e882a38ad63fb4d02d773aa6f9c4a186
 from resolveurl.plugins.lib import helpers
 from resolveurl.common import Net, RAND_UA
 from resolveurl.resolver import ResolveUrl, ResolverError
@@ -50,7 +54,11 @@ class FastplayResolver(ResolveUrl):
         if sources:
 
             # Headers for requesting media (copied from Firefox).
+<<<<<<< HEAD
             parsedUrl = urllib.parse.urlparse(r.get_url())
+=======
+            parsedUrl = urllib_parse.urlparse(r.get_url())
+>>>>>>> 2af46ce0e882a38ad63fb4d02d773aa6f9c4a186
             kodiHeaders = {
                 'User-Agent': self.userAgent,
                 'Accept': 'video/webm,video/ogg,video/*;q=0.9,application/ogg;q=0.7,audio/*;q=0.6,*/*;q=0.5',

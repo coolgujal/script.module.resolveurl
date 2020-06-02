@@ -16,8 +16,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 import re
-from six.moves import urllib
 import six
+from six.moves import urllib_error, urllib_request, urllib_parse
 import traceback
 import resolveurl
 from resolveurl import common
@@ -115,7 +115,7 @@ class HostedMediaFile:
         return resolvers
 
     def __top_domain(self, url):
-        elements = urllib.parse.urlparse(url)
+        elements = urllib_parse.urlparse(url)
         domain = elements.netloc or elements.path
         domain = domain.split('@')[-1].split(':')[0]
         regex = r"(?:www\.)?([\w\-]*\.[\w\-]{2,5}(?:\.[\w\-]{2,5})?)$"
@@ -244,7 +244,7 @@ class HostedMediaFile:
         except:
             headers = {}
         for header in headers:
-            headers[header] = urllib.parse.unquote_plus(headers[header])
+            headers[header] = urllib_parse.unquote_plus(headers[header])
         common.logger.log_debug('Setting Headers on UrlOpen: %s' % headers)
 
         try:
@@ -252,31 +252,34 @@ class HostedMediaFile:
             ssl_context = ssl.create_default_context()
             ssl_context.check_hostname = False
             ssl_context.verify_mode = ssl.CERT_NONE
-            opener = urllib.request.build_opener(urllib.request.HTTPSHandler(context=ssl_context))
-            urllib.request.install_opener(opener)
+            opener = urllib_request.build_opener(urllib_request.HTTPSHandler(context=ssl_context))
+            urllib_request.install_opener(opener)
         except:
             pass
 
         try:
             msg = ''
-            request = urllib.request.Request(stream_url.split('|')[0], headers=headers)
+            request = urllib_request.Request(stream_url.split('|')[0], headers=headers)
             # only do a HEAD request. gujal
             request.get_method = lambda: 'HEAD'
             #  set urlopen timeout to 15 seconds
-            http_code = urllib.request.urlopen(request, timeout=15).getcode()
-        except urllib.error.URLError as e:
+            http_code = urllib_request.urlopen(request, timeout=15).getcode()
+        except urllib_error.HTTPError as e:
+            if isinstance(e, urllib_error.HTTPError):
+                http_code = e.code
+            else:
+                http_code = 600
+        except urllib_error.URLError as e:
+            http_code = 500
             if hasattr(e, 'reason'):
                 # treat an unhandled url type as success
                 if 'unknown url type' in str(e.reason).lower():
                     return True
                 else:
                     msg = e.reason
-            if isinstance(e, urllib.error.HTTPError):
-                http_code = e.HTTPError.code
-            else:
-                http_code = 600
             if not msg:
                 msg = str(e)
+
         except Exception as e:
             http_code = 601
             msg = str(e)

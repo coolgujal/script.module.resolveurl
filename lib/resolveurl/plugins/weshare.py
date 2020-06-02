@@ -1,6 +1,6 @@
-'''
-vup resolveurl plugin
-Copyright (C) 2019 gujal
+"""
+Plugin for ResolveUrl
+Copyright (C) 2015 tknorris
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -14,17 +14,14 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
-'''
-from lib import helpers
-from resolveurl.resolver import ResolveUrl, ResolverError
+"""
+from resolveurl.plugins.__resolve_generic__ import ResolveGeneric
 
-class VuptoResolver(ResolveUrl):
-    name = "vup"
-    domains = ["vup.to"]
-    pattern = r'(?://|\.)(vup\.to)/(?:embed-)?([0-9a-zA-Z]+)'
 
-    def get_media_url(self, host, media_id):
-        return helpers.get_media_url(self.get_url(host, media_id), patterns=[r'''sources:\s*\[{src:\s*"(?P<url>[^"]+)'''])
+class WeShareResolver(ResolveGeneric):
+    name = "weshare.me"
+    domains = ["weshare.me"]
+    pattern = r'(?://|\.)(weshare\.me)/(?:services/mediaplayer/site/_embed(?:\.max)?\.php\?u=)?([A-Za-z0-9]+)'
 
     def get_url(self, host, media_id):
-        return self._default_get_url(host, media_id, template='https://{host}/embed-{media_id}.html')
+        return self._default_get_url(host, media_id, 'https://{host}/services/mediaplayer/site/_embed.max.php?u={media_id}')

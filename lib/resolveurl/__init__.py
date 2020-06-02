@@ -27,10 +27,9 @@ For most cases you probably want to use :func:`resolveurl.resolve` or
 
 """
 import re
-from six.moves import urllib
+from six.moves import urllib_parse
 import six
 import sys
-import xbmc  # @UnusedImport
 import xbmcvfs
 import xbmcgui
 from resolveurl import common
@@ -210,7 +209,7 @@ def scrape_supported(html, regex=None, host_only=False):
     links = []
     for match in re.finditer(regex, html):
         stream_url = match.group(1)
-        host = urllib.parse.urlparse(stream_url).hostname
+        host = urllib_parse.urlparse(stream_url).hostname
         if host_only:
             if host is None:
                 continue

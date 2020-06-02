@@ -17,7 +17,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 """
 
 import re
-from six.moves import urllib
+from six.moves import urllib_error
 import json
 from resolveurl.plugins.lib import helpers
 from resolveurl import common
@@ -59,7 +59,7 @@ class FlashxResolver(ResolveUrl):
             js_result = json.loads(self.net.http_GET(url, headers=self.headers).content)
         except ValueError:
             raise ResolverError('Unusable Authorization Response')
-        except urllib.error.HTTPError as e:
+        except urllib_error.HTTPError as e:
             if e.code == 401:
                 js_result = json.loads(str(e.read()))
             else:

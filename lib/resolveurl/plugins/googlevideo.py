@@ -22,7 +22,7 @@ from resolveurl.plugins.lib import helpers
 import re
 import xbmc
 import json
-from six.moves import urllib
+from six.moves import urllib_error, urllib_parse, urllib_request
 import six
 
 
@@ -94,16 +94,16 @@ class GoogleResolver(ResolveUrl):
         return 'https://%s/%s' % (host, media_id)
 
     def _parse_redirect(self, url, hdrs={}):
-        class NoRedirection(urllib.request.HTTPErrorProcessor):
+        class NoRedirection(urllib_request.HTTPErrorProcessor):
             def http_response(self, request, response):
                 return response
 
-        opener = urllib.request.build_opener(NoRedirection)
-        urllib.request.install_opener(opener)  # @ big change
-        request = urllib.request.Request(url, headers=hdrs)
+        opener = urllib_request.build_opener(NoRedirection)
+        urllib_request.install_opener(opener)  # @ big change
+        request = urllib_request.Request(url, headers=hdrs)
         try:
-            response = urllib.request.urlopen(request)
-        except urllib.error.HTTPError as e:
+            response = urllib_request.urlopen(request)
+        except urllib_error.HTTPError as e:
             if e.code == 429 or e.code == 403:
                 msg = 'Daily view limit reached'
                 common.kodi.notify(header=None, msg=msg, duration=3000)
@@ -173,7 +173,7 @@ class GoogleResolver(ResolveUrl):
                                                 sources = self.__extract_video(item2)
                                                 if sources:
                                                     return sources
-            except Exception as e:
+            except Exception as _:
                 pass
         return sources
 
@@ -190,7 +190,7 @@ class GoogleResolver(ResolveUrl):
                                         if isinstance(item4, six.text_type) and six.PY2:  # @big change
                                             item4 = item4.encode('utf-8')
                                         if isinstance(item4, six.string_types) and six.PY2:  # @big change
-                                            item4 = urllib.parse.unquote(item4).decode('unicode_escape')
+                                            item4 = urllib_parse.unquote(item4).decode('unicode_escape')
                                             for match in re.finditer('url=(?P<link>[^&]+).*?&itag=(?P<itag>[^&]+)', item4):
                                                 link = match.group('link')
                                                 itag = match.group('itag')
@@ -212,7 +212,7 @@ class GoogleResolver(ResolveUrl):
                         source_url = source_url.encode('utf-8')
                     source_url = source_url.decode('unicode_escape')
                     quality = self.itag_map.get(_source_itag, 'Unknown Quality [%s]' % _source_itag)
-                    source_url = urllib.parse.unquote(source_url)
+                    source_url = urllib_parse.unquote(source_url)
                     urls.append((quality, source_url))
                 return urls
 

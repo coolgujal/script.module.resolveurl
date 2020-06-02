@@ -15,12 +15,11 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-from __future__ import absolute_import
 import re
 import xbmcgui
-from . import jsunpack
+from resolveurl.plugins.lib import jsunpack
 import six
-from six.moves import urllib
+from six.moves import urllib_parse
 from resolveurl import common
 from resolveurl.resolver import ResolverError
 
@@ -75,7 +74,7 @@ def pick_source(sources, auto_pick=None):
 
 
 def append_headers(headers):
-    return '|%s' % '&'.join(['%s=%s' % (key, urllib.parse.quote_plus(headers[key])) for key in headers])
+    return '|%s' % '&'.join(['%s=%s' % (key, urllib_parse.quote_plus(headers[key])) for key in headers])
 
 
 def get_packed_data(html):
@@ -141,7 +140,7 @@ def scrape_sources(html, result_blacklist=None, scheme='http', patterns=None, ge
         for r in re.finditer(regex, _html, re.DOTALL):
             match = r.groupdict()
             stream_url = match['url'].replace('&amp;', '&')
-            file_name = urllib.parse.urlparse(stream_url[:-1]).path.split('/')[-1] if stream_url.endswith("/") else urllib.parse.urlparse(stream_url).path.split('/')[-1]
+            file_name = urllib_parse.urlparse(stream_url[:-1]).path.split('/')[-1] if stream_url.endswith("/") else urllib_parse.urlparse(stream_url).path.split('/')[-1]
             blocked = not file_name or any(item in file_name.lower() for item in _blacklist)
             if stream_url.startswith('//'):
                 stream_url = scheme + ':' + stream_url
@@ -189,7 +188,7 @@ def scrape_sources(html, result_blacklist=None, scheme='http', patterns=None, ge
 def get_media_url(url, result_blacklist=None, patterns=None, generic_patterns=True):
     if patterns is None:
         patterns = []
-    scheme = urllib.parse.urlparse(url).scheme
+    scheme = urllib_parse.urlparse(url).scheme
     if result_blacklist is None:
         result_blacklist = []
     elif isinstance(result_blacklist, str):
