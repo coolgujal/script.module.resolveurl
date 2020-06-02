@@ -1,6 +1,6 @@
-'''
-    Plugin for ResolveURL
-    Copyright (C) 2018 gujal
+"""
+    Plugin for ResolveUrl
+    Copyright (C) 2018 holisticdioxide
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -14,18 +14,17 @@
 
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
-'''
-
-import re
-from lib import helpers
-from lib import jsunpack
+"""
+import six
 from resolveurl import common
 from resolveurl.resolver import ResolveUrl, ResolverError
+from resolveurl.plugins.lib import jsunpack, helpers
 
-class VKSpeedResolver(ResolveUrl):
-    name = "vkspeed"
-    domains = ["vkspeed.com", "speedwatch.us"]
-    pattern = r'(?://|\.)(speedwatch\.us|vkspeed\.com)/(?:embed-)?([0-9a-zA-Z]+)'
+
+class VshareResolver(ResolveUrl):
+    name = "vshare"
+    domains = ['vshare.io']
+    pattern = r'(?://|\.)(vshare\.io)/\w?/(\w+)'
 
     def __init__(self):
         self.net = common.Net()
@@ -35,15 +34,21 @@ class VKSpeedResolver(ResolveUrl):
         headers = {'User-Agent': common.RAND_UA,
                    'Referer': web_url}
         html = self.net.http_GET(web_url, headers=headers).content
-        r = re.search("script'>(eval.*?)</script", html, re.DOTALL)
-        
-        if r:
-            html = jsunpack.unpack(r.group(1))
-            sources = helpers.scrape_sources(html, patterns=[r'''file:\s*"(?P<url>[^"]+)'''], generic_patterns=False)
-            if sources:
-                return helpers.pick_source(sources) + helpers.append_headers(headers)
+        js = jsunpack.unpack(html).split(';')
+        try:
+            charcodes = [int(val) for val in js[1].split('=')[-1].replace('[', '').replace(']', '').split(',')]
+            sub = int(''.join(char for char in js[2].split('-')[1] if char.isdigit()))
+        except IndexError:
+            raise ResolverError('Video not found')
 
-        raise ResolverError('Video cannot be located.')
+        charcodes = [val - sub for val in charcodes]
+        try:
+            srcs = ''.join(map(six.unichr, charcodes))
+        except ValueError:
+            raise ResolverError('Video not found')
+        source_list = helpers.scrape_sources(srcs)
+        source = helpers.pick_source(source_list)
+        return source + helpers.append_headers(headers)
 
     def get_url(self, host, media_id):
-        return self._default_get_url(host, media_id, template='https://vkspeed.com/{media_id}.html')
+        return self._default_get_url(host, media_id, template='http://{host}/v/{media_id}/width-750/height-400/')
