@@ -1,6 +1,6 @@
 """
-    resolveurl XBMC Addon
-    Copyright (C) 2011 t0mm0
+    Plugin for ResolveURL
+    Copyright (C) 2020 gujal
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -16,17 +16,16 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 import re
-import urllib
-import urllib2
+from six.moves import urllib_error, urllib_parse
 from resolveurl import common
-from lib import helpers
+from resolveurl.plugins.lib import helpers
 from resolveurl.resolver import ResolveUrl, ResolverError
 
 
-class VidUpMeResolver(ResolveUrl):
-    name = "vidup.me"
-    domains = ["vidup.me", "vidup.tv", "vidup.io"]
-    pattern = '(?://|\.)(vidup\.(?:me|tv|io))/(?:embed-|download/)?([0-9a-zA-Z]+)'
+class VidUpResolver(ResolveUrl):
+    name = "vidup.io"
+    domains = ["vidup.tv", "vidup.io", "vidop.icu"]
+    pattern = r'(?://|\.)(vid[ou]p\.(?:tv|io|icu))/(?:embed-|download/|embed/)?([0-9a-zA-Z]+)'
 
     def __init__(self):
         self.net = common.Net()
@@ -38,23 +37,23 @@ class VidUpMeResolver(ResolveUrl):
         sources = helpers.parse_sources_list(html)
         if sources:
             try:
-                token = re.search('''var thief\s*=\s*["']([^"']+)''', html)
+                token = re.search(r'''var thief\s*=\s*["']([^"']+)''', html)
                 if token:
-                    vt_url = 'http://vidup.tv/jwv/%s' % token.group(1)
+                    vt_url = 'http://vidop.icu/jwv/%s' % token.group(1)
                     vt_html = self.net.http_GET(vt_url, headers=headers).content
-                    vt = re.search('''\|([-\w]{50,})''', vt_html)
+                    vt = re.search(r'''\|([-\w]{50,})''', vt_html)
                     if vt:
                         sources = helpers.sort_sources_list(sources)
                         params = {'direct': 'false', 'ua': 1, 'vt': vt.group(1)}
-                        return helpers.pick_source(sources) + '?' + urllib.urlencode(params) + helpers.append_headers(headers)
+                        return helpers.pick_source(sources) + '?' + urllib_parse.urlencode(params) + helpers.append_headers(headers)
                     else:
                         raise ResolverError('Video VT Missing')
                 else:
                     raise ResolverError('Video Token Missing')
-            except urllib2.HTTPError:
+            except urllib_error.HTTPError:
                 raise ResolverError('Unable to read page data')
 
         raise ResolverError('Unable to locate video')
 
     def get_url(self, host, media_id):
-        return self._default_get_url(host, media_id, template='https://vidup.tv/embed-{media_id}.html')
+        return self._default_get_url(host, media_id, template='https://vidop.icu/embed/{media_id}')

@@ -1,6 +1,7 @@
+# -*- coding: UTF-8 -*-
 """
-    Plugin for ResolveUrl
-    Copyright (C) 2019 twilight0
+    Plugin for ResolveURL
+    Copyright (C) 2017  zlootec
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -16,37 +17,35 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from lib import helpers
+import re
+from resolveurl.plugins.lib import helpers
 from resolveurl import common
 from resolveurl.resolver import ResolveUrl, ResolverError
 
 
-class BrighteonResolver(ResolveUrl):
-    name = "brighteon"
-    domains = ['brighteon.com']
-    pattern = r'(?://|\.)(brighteon\.com)/(?:embed)?/?([\w-]+)'
+class VidstoreResolver(ResolveUrl):
+    name = "vidstore"
+    domains = ["vidstore.me"]
+    pattern = r'(?://|\.)(vidstore\.me)/(.+)'
 
     def __init__(self):
         self.net = common.Net()
 
     def get_media_url(self, host, media_id):
-
         web_url = self.get_url(host, media_id)
 
-        headers = {'User-Agent': common.RAND_UA}
+        headers = {'User-Agent': common.FF_USER_AGENT}
         html = self.net.http_GET(web_url, headers=headers).content
 
-        try:
-
-            sources = helpers.scrape_sources(
-                html, patterns=[r'source src=[\'"](?P<url>.+?)[\'"].+?x-mpegURL']
-            )
-
-            return helpers.pick_source(sources) + helpers.append_headers(headers)
-
-        except Exception:
-            raise ResolverError("Video not found")
+        sources = re.findall(r'''<source\s+src\s*=\s*['"]([^'"]+).+?label\s*=\s*['"]([^'"]+)''', html, re.DOTALL)
+        if sources:
+            sources = [(i[1], i[0]) for i in sources]
+            sources = sorted(sources, key=lambda x: x[0], reverse=True)
+            source = 'http://www.%s%s' % (host, helpers.pick_source(sources))
+            headers['Referer'] = web_url
+            source = self.net.http_GET(source, headers=headers).get_url()
+            return source + helpers.append_headers(headers)
+        raise ResolverError('File not found')
 
     def get_url(self, host, media_id):
-
-        return self._default_get_url(host, media_id, template='https://www.{host}/embed/{media_id}')
+        return self._default_get_url(host, media_id, template='https://www.{host}/{media_id}')

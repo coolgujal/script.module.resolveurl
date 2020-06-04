@@ -40,7 +40,7 @@ class VimeoResolver(ResolveUrl):
         sources = [(vid['height'], vid['url']) for vid in data.get('request', {}).get('files', {}).get('progressive', {})]
         if sources:
             sources.sort(key=lambda x: x[0], reverse=True)
-            return helpers.pick_source(sources)
+            return helpers.pick_source(sources) + helpers.append_headers(headers)
 
         raise ResolverError('File Not Found or removed')
 

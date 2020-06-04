@@ -1,6 +1,6 @@
-'''
-    Plugin for ResolveUrl
-    Copyright (C) 2016 gujal
+"""
+    Plugin for ResolveURL
+    Copyright (C) 2016  script.module.resolveurl
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -14,21 +14,21 @@
 
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
-'''
+"""
 
-from __resolve_generic__ import ResolveGeneric
-from lib import helpers
+from resolveurl.plugins.lib import helpers
+from resolveurl.plugins.__resolve_generic__ import ResolveGeneric
 
 
-class DateMuleResolver(ResolveGeneric):
-    name = "datemule"
-    domains = ["datemule.co", "datemule.com"]
-    pattern = r'(?://|\.)(datemule\.(?:co|com))/watch/(?:featured/)?([\w-]+)'
+class VidozaResolver(ResolveGeneric):
+    name = 'vidoza'
+    domains = ['vidoza.net']
+    pattern = r'(?://|\.)(vidoza\.net)/(?:embed-)?([0-9a-zA-Z]+)'
 
     def get_media_url(self, host, media_id):
         return helpers.get_media_url(self.get_url(host, media_id),
-                                     patterns=[r'''(?:hls|mp4)\s*:\s*\[?['"](?P<url>[^'"]+)'''],
+                                     patterns=[r'''["']?\s*(?:file|src)\s*["']?\s*[:=,]?\s*["'](?P<url>[^"']+)(?:[^}>\]]+)["']?\s*res\s*["']?\s*[:=]\s*["']?(?P<label>[^"',]+)'''],
                                      generic_patterns=False).replace(' ', '%20')
 
     def get_url(self, host, media_id):
-        return self._default_get_url(host, media_id, 'https://www.datemule.com/watch/{media_id}')
+        return self._default_get_url(host, media_id, template='https://{host}/embed-{media_id}.html')
