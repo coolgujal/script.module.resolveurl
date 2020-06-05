@@ -1,6 +1,6 @@
 """
-    resolveurl Kodi plugin
-    Copyright (C) 2018 gujal
+    ResolveUrl Plugin
+    Copyright (C) 2017 Gujal
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -16,16 +16,18 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from lib import helpers
-from resolveurl import common
-from resolveurl.resolver import ResolveUrl, ResolverError
-from lib import unwise
 import re
+import six
+import base64
+from resolveurl import common
+from resolveurl.plugins.lib import helpers
+from resolveurl.resolver import ResolveUrl, ResolverError
 
-class VideozUpload(ResolveUrl):
-    name = 'videozupload.net'
-    domains = ['videozupload.net', 'videzup.pl', 'videzup.top']
-    pattern = '(?://|\.)((?:videozupload|videzup)\.(?:net|pl|top))/video/([0-9a-z]+)'
+
+class VideoHost2Resolver(ResolveUrl):
+    name = 'videohost2.com'
+    domains = ['videohost2.com']
+    pattern = r'(?://|\.)(videohost2\.com)/playh\.php\?id=([0-9a-f]+)'
 
     def __init__(self):
         self.net = common.Net()
@@ -33,17 +35,18 @@ class VideozUpload(ResolveUrl):
     def get_media_url(self, host, media_id):
         web_url = self.get_url(host, media_id)
         headers = {'User-Agent': common.FF_USER_AGENT}
-        response = self.net.http_GET(web_url, headers=headers)
-        headers['Referer'] = 'https://embed.%s/' % host
-        html = response.content
-        html = unwise.unwise_process(html)
-        r = re.search("Clappr.+?source:\s*'([^']+)",html)
+        html = self.net.http_GET(web_url).content
+        r = re.search(r"atob\('([^']+)", html)
+
         if r:
-            strurl = r.group(1) + helpers.append_headers(headers)
-        else:
-            raise ResolverError('File Not Found or removed')
-        
-        return strurl
+            html = r.group(1).encode('ascii') if six.PY3 else r.group(1)
+            html = base64.b64decode(html)
+            html = html.decode('latin-1') if six.PY3 else html
+            r2 = re.search(r"source\s*src='([^']+)", html)
+            if r2:
+                return r2.group(1) + helpers.append_headers(headers)
+
+        raise ResolverError('no file located')
 
     def get_url(self, host, media_id):
-        return 'https://embed.%s/video/%s' % (host,media_id)
+        return self._default_get_url(host, media_id, 'http://{host}/playh.php?id={media_id}')
