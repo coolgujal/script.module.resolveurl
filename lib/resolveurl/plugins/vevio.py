@@ -15,9 +15,9 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 '''
-import urllib2
+from six.moves import urllib_error
 import json
-from lib import helpers
+from resolveurl.plugins.lib import helpers
 from resolveurl import common
 from resolveurl.common import i18n
 from resolveurl.resolver import ResolveUrl, ResolverError
@@ -26,7 +26,7 @@ from resolveurl.resolver import ResolveUrl, ResolverError
 class VevIoResolver(ResolveUrl):
     name = "vevio"
     domains = ["vev.io", "vev.red"]
-    pattern = '(?://|\.)(vev\.(?:io|red))/(?:embed/)?([0-9a-zA-Z]+)'
+    pattern = r'(?://|\.)(vev\.(?:io|red))/(?:embed/)?([0-9a-zA-Z]+)'
 
     def __init__(self):
         self.net = common.Net()
@@ -41,7 +41,7 @@ class VevIoResolver(ResolveUrl):
             raise
 
         if result:
-            return helpers.pick_source(result) + helpers.append_headers(self.headers)
+            return helpers.pick_source(helpers.sort_sources_list(result)) + helpers.append_headers(self.headers)
 
         raise ResolverError("Unable to retrieve video")
 
@@ -55,26 +55,25 @@ class VevIoResolver(ResolveUrl):
 
     def __check_auth(self, media_id):
         common.logger.log('Checking Auth: %s' % media_id)
-        url = 'https://vev.io/api/pair/%s' % media_id
+        url = self.get_url(media_id)
         try:
             js_result = json.loads(self.net.http_GET(url, headers=self.headers).content)
         except ValueError:
             raise ResolverError('Unusable Authorization Response')
-        except urllib2.HTTPError as e:
+        except urllib_error.HTTPError as e:
             if e.code == 400 or e.code == 401:
-                js_result = json.loads(str(e.read()))
+                js_result = {}
             else:
                 raise
 
         common.logger.log('Auth Result: %s' % js_result)
-        if 'qualities' in js_result:
-			qualities = js_result.get('qualities', {})
-			return qualities[-1].items()
+        if js_result.get('qualities', {}):
+            return [(qual.get('size')[1], qual.get('src')) for qual in js_result.get('qualities')]
         else:
-            return {}
+            return []
 
-    def get_url(self, host, media_id):
-        return self._default_get_url(host, media_id, template='https://vev.io/embed/{media_id}')
+    def get_url(self, media_id, host='vev.io'):
+        return self._default_get_url(host, media_id, template='https://{host}/api/pair/{media_id}')
 
     @classmethod
     def isPopup(self):

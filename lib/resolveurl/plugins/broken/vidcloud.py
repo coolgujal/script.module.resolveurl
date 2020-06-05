@@ -1,5 +1,5 @@
 """
-    resolveurl XBMC Addon
+    Plugin for ResolveUrl
     Copyright (C) 2016 jsergio
 
 This program is free software: you can redistribute it and/or modify
@@ -15,7 +15,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 """
-from lib import helpers
+from resolveurl.plugins.lib import helpers
 from resolveurl import common
 from resolveurl.resolver import ResolveUrl, ResolverError
 
@@ -23,7 +23,7 @@ from resolveurl.resolver import ResolveUrl, ResolverError
 class VidCloudResolver(ResolveUrl):
     name = 'vidcloud'
     domains = ['vidcloud.co', 'loadvid.online', 'vcstream.to']
-    pattern = '(?://|\.)((?:vidcloud\.co|loadvid\.online|vcstream\.to))/(?:embed/|v/|player\?fid=)([0-9a-zA-Z]+)'
+    pattern = r'(?://|\.)((?:vidcloud\.co|loadvid\.online|vcstream\.to))/(?:embed/|v/|player\?fid=)([0-9a-zA-Z]+)'
 
     def __init__(self):
         self.net = common.Net()
@@ -35,8 +35,8 @@ class VidCloudResolver(ResolveUrl):
 
         if html:
             sources = helpers.scrape_sources(html.replace("\\n", "").replace("\\", ""), patterns=[
-                '''file":\s*"(?P<url>[^"]+)''', '''src":\s*"(?P<url>[^"]+)(?:[^}>\]]+)label":\s*"(?P<label>[^"]+)'''],
-                                             generic_patterns=False)
+                r'''file":\s*"(?P<url>[^"]+)''', r'''src":\s*"(?P<url>[^"]+)(?:[^}>\]]+)label":\s*"(?P<label>[^"]+)'''],
+                generic_patterns=False)
             if sources:
                 return helpers.pick_source(sources) + helpers.append_headers(headers)
 

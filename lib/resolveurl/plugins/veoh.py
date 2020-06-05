@@ -1,5 +1,5 @@
 """
-    resolveurl XBMC Addon
+    Plugin for ResolveUrl
     Copyright (C) 2011 anilkuj
     Copyright (C) 2019 cache-sk
 
@@ -18,7 +18,7 @@
 """
 
 import json
-from lib import helpers
+from resolveurl.plugins.lib import helpers
 from resolveurl import common
 from resolveurl.resolver import ResolveUrl, ResolverError
 
@@ -26,31 +26,25 @@ from resolveurl.resolver import ResolveUrl, ResolverError
 class VeohResolver(ResolveUrl):
     name = "veoh"
     domains = ["veoh.com"]
-    pattern = '(?://|\.)(veoh\.com)/(?:watch/|.+?permalinkId=)?([0-9a-zA-Z/]+)'
-
-    def __init__(self):
-        self.net = common.Net()
+    pattern = r'(?://|\.)(veoh\.com)/(?:watch/|.+?permalinkId=)?([0-9a-zA-Z/]+)'
 
     def get_media_url(self, host, media_id):
-        try:
-            _json = self.net.http_GET("https://www.veoh.com/watch/getVideo/" + media_id).content
-            _data = json.loads(_json)
-            if 'video' in _data and 'src' in _data['video']:
-                sources = []
-                _src = _data['video']['src']
-                if 'HQ' in _src:
-                    sources.append(('HD', _src['HQ']))
-                if 'Regular' in _src:
-                    sources.append(('SD', _src['Regular']))
-                
-                if len(sources) > 0:
-                    return helpers.pick_source(sources)
+        web_url = self.get_url(host, media_id)
+        headers = {'User-Agent': common.CHROME_USER_AGENT, 'Referer': web_url}
+        html = self.net.http_GET(web_url, headers=headers).content
+        _data = json.loads(html)
+        if 'video' in _data and 'src' in _data['video']:
+            sources = []
+            _src = _data['video']['src']
+            if 'HQ' in _src:
+                sources.append((720, _src['HQ']))
+            if 'Regular' in _src:
+                sources.append((480, _src['Regular']))
 
-                raise ResolverError('File Not Found or removed')
-        except:
-            pass    
-        
-        raise ResolverError('Unknown error')
+            if len(sources) > 0:
+                return helpers.pick_source(sources) + helpers.append_headers(headers)
+
+        raise ResolverError('Unable to locate video')
 
     def get_url(self, host, media_id):
-        return 'http://veoh.com/watch/%s' % media_id
+        return self._default_get_url(host, media_id, template='https://www.{host}/watch/getVideo/{media_id}')

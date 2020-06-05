@@ -15,12 +15,13 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 """
-from __resolve_generic__ import ResolveGeneric
+from resolveurl.plugins.__resolve_generic__ import ResolveGeneric
+
 
 class VidbobResolver(ResolveGeneric):
     name = "vidbob.com"
     domains = ["vidbob.com"]
-    pattern = '(?://|\.)(vidbob\.com)/(?:embed-)?([0-9a-zA-Z-]+)'
-    
+    pattern = r'(?://|\.)(vidbob\.com)/(?:embed-)?([0-9a-zA-Z-]+)'
+
     def get_url(self, host, media_id):
         return self._default_get_url(host, media_id, template='https://{host}/embed-{media_id}.html')

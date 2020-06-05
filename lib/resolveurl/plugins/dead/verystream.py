@@ -1,6 +1,6 @@
 '''
-    resolveurl Kodi plugin
-    Copyright (C) 2019
+    Plugin for ResolveUrl
+    Copyright (C) 2019 gujal
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
 '''
 
 import re
-from lib import helpers
+from resolveurl.plugins.lib import helpers
 from resolveurl import common
 from resolveurl.resolver import ResolveUrl, ResolverError
 
@@ -33,16 +33,13 @@ class VeryStreamResolver(ResolveUrl):
     def get_media_url(self, host, media_id):
         web_url = self.get_url(host, media_id)
         headers = {'User-Agent': common.FF_USER_AGENT, 'Referer': 'https://verystream.com/'}
-        response = self.net.http_GET(web_url, headers=headers)
-        html = response.content
-
-        if html:
-            regex = '(%s~[~.:a-zA-Z0-9]+)' % media_id
-            videolink = re.search(regex, html)
-            if videolink:
-                source = 'https://verystream.com/gettoken/{0}?mime=true'.format(videolink.group(1))
-                headers.update({'Referer': web_url})
-                return source + helpers.append_headers(headers)
+        html = self.net.http_GET(web_url, headers=headers).content
+        regex = '(%s~[~.:a-zA-Z0-9]+)' % media_id
+        r = re.search(regex, html)
+        if r:
+            source = 'https://verystream.com/gettoken/{0}?mime=true'.format(r.group(1))
+            headers.update({'Referer': web_url})
+            return source + helpers.append_headers(headers)
 
         raise ResolverError("Could not locate video")
 

@@ -53,4 +53,4 @@ class VideowoodResolver(ResolveUrl):
         raise ResolverError('Video Link Not Found')
 
     def get_url(self, host, media_id):
-        return 'http://videowood.tv/embed/%s' % media_id
+        return self._default_get_url(host, media_id, 'http://{host}/embed/{media_id}')
