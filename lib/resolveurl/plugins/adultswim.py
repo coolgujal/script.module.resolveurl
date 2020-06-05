@@ -24,9 +24,6 @@ class AdultSwimResolver(ResolveUrl):
     domains = ["adultswim.com"]
     pattern = r"(?://|\.)(adultswim\.com)/videos/((?!streams)[a-z\-]+/[a-z\-]+)"
 
-    def __init__(self):
-        self.net = common.Net()
-
     def get_media_url(self, host, media_id):
         web_url = self.get_url(host, media_id)
         headers = {'User-Agent': common.FF_USER_AGENT}

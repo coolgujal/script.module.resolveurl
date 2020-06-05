@@ -29,9 +29,6 @@ class HXLoadResolver(ResolveUrl):
     domains = ["hxload.to", "hxload.co", "hxload.io"]
     pattern = r'(?://|\.)(hxload\.(?:to|co|io))/(?:embed/|\?e=)?([0-9a-zA-Z]+)'
 
-    def __init__(self):
-        self.net = common.Net()
-
     def get_media_url(self, host, media_id):
         web_url = self.get_url(host, media_id)
         headers = {'User-Agent': common.RAND_UA,

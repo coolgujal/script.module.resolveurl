@@ -29,9 +29,6 @@ class VidloxResolver(ResolveUrl):
     domains = ['vidlox.tv', 'vidlox.me', 'vidlox.xyz']
     pattern = r'(?://|\.)(vidlox\.(?:tv|me|xyz))/(?:embed-|source/)?([0-9a-zA-Z]+)'
 
-    def __init__(self):
-        self.net = common.Net()
-
     def get_media_url(self, host, media_id):
         web_url = self.get_url(host, media_id)
         headers = {'User-Agent': common.RAND_UA}

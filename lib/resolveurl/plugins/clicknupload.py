@@ -29,9 +29,6 @@ class ClickNUploadResolver(ResolveUrl):
     domains = ['clicknupload.co', 'clicknupload.com', 'clicknupload.me', 'clicknupload.link', 'clicknupload.org']
     pattern = r'(?://|\.)(clicknupload\.(?:com?|me|link|org))/(?:f/)?([0-9A-Za-z]+)'
 
-    def __init__(self):
-        self.net = common.Net()
-
     def get_media_url(self, host, media_id):
         web_url = self.get_url(host, media_id)
         headers = {'User-Agent': common.FF_USER_AGENT,

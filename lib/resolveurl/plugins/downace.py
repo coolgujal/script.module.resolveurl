@@ -24,4 +24,4 @@ class DownaceResolver(ResolveGeneric):
     pattern = r'(?://|\.)(downace\.com)/(?:embed/)?([0-9a-zA-Z]+)'
 
     def get_url(self, host, media_id):
-        return 'https://www.downace.com/embed/%s' % (media_id)
+        return self._default_get_url(host, media_id, 'https://{host}/embed/{media_id}')

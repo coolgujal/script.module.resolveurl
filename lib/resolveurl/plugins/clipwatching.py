@@ -26,9 +26,6 @@ class ClipWatchingResolver(ResolveUrl):
     domains = ['clipwatching.com']
     pattern = r'(?://|\.)(clipwatching\.com)/(?:embed-)?(\w+)'
 
-    def __init__(self):
-        self.net = common.Net()
-
     def get_media_url(self, host, media_id):
         web_url = self.get_url(host, media_id)
         headers = {'User-Agent': common.RAND_UA}

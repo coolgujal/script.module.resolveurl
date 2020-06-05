@@ -27,24 +27,21 @@ class DailymotionResolver(ResolveUrl):
     domains = ['dailymotion.com']
     pattern = r'(?://|\.)(dailymotion\.com)/(?:video|embed|sequence|swf)(?:/video)?/([0-9a-zA-Z]+)'
 
-    def __init__(self):
-        self.net = common.Net()
-        self.headers = {'User-Agent': common.RAND_UA,
-                        'Origin': 'https://www.dailymotion.com',
-                        'Referer': 'https://www.dailymotion.com/'}
-
     def get_media_url(self, host, media_id):
         web_url = self.get_url(host, media_id)
-        js_result = json.loads(self.net.http_GET(web_url, headers=self.headers).content)
+        headers = {'User-Agent': common.RAND_UA,
+                   'Origin': 'https://www.dailymotion.com',
+                   'Referer': 'https://www.dailymotion.com/'}
+        js_result = json.loads(self.net.http_GET(web_url, headers=headers).content)
 
         if js_result.get('error'):
             raise ResolverError(js_result.get('error').get('title'))
 
         quals = js_result.get('qualities')
         if quals:
-            mbtext = self.net.http_GET(quals.get('auto')[0].get('url'), headers=self.headers).content
+            mbtext = self.net.http_GET(quals.get('auto')[0].get('url'), headers=headers).content
             sources = re.findall('NAME="(?P<label>[^"]+)",PROGRESSIVE-URI="(?P<url>[^#]+)', mbtext)
-            return helpers.pick_source(helpers.sort_sources_list(sources)) + helpers.append_headers(self.headers)
+            return helpers.pick_source(helpers.sort_sources_list(sources)) + helpers.append_headers(headers)
         raise ResolverError('No playable video found.')
 
     def get_url(self, host, media_id):

@@ -26,9 +26,6 @@ class VidorgResolver(ResolveUrl):
     domains = ["vidorg.net", "vidpiz.xyz"]
     pattern = r'(?://|\.)(vid(?:org|piz)\.(?:net|xyz))/(?:embed[/-])?([0-9A-Za-z]+)'
 
-    def __init__(self):
-        self.net = common.Net()
-
     def get_media_url(self, host, media_id):
         web_url = self.get_url(host, media_id)
         headers = {'User-Agent': common.RAND_UA}

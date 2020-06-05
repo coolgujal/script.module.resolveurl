@@ -28,9 +28,6 @@ class VidstoreResolver(ResolveUrl):
     domains = ["vidstore.me"]
     pattern = r'(?://|\.)(vidstore\.me)/(.+)'
 
-    def __init__(self):
-        self.net = common.Net()
-
     def get_media_url(self, host, media_id):
         web_url = self.get_url(host, media_id)
 

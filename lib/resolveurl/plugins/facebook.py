@@ -18,7 +18,6 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 import re
 from six.moves import urllib_parse
-from resolveurl import common
 from resolveurl.resolver import ResolveUrl, ResolverError
 
 
@@ -26,9 +25,6 @@ class FacebookResolver(ResolveUrl):
     name = "facebook"
     domains = ["facebook.com"]
     pattern = r'(?://|\.)(facebook\.com)/.+?video_id=([0-9a-zA-Z]+)'
-
-    def __init__(self):
-        self.net = common.Net()
 
     def get_media_url(self, host, media_id):
         web_url = self.get_url(host, media_id)
