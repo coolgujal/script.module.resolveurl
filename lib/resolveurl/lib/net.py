@@ -318,7 +318,8 @@ class Net:
             req.add_header(key, headers[key])
         if compression:
             req.add_header('Accept-Encoding', 'gzip')
-        req.add_unredirected_header('Host', req.host)
+        host = req.host if six.PY3 else req.get_host()
+        req.add_unredirected_header('Host', host)
         response = urllib_request.urlopen(req, timeout=15)
         return HttpResponse(response)
 
