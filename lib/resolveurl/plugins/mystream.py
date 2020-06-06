@@ -87,7 +87,8 @@ class MystreamResolver(ResolveUrl):
                     elif b == '(!""+"")[$]':
                         tmplist.append(("$.{}+".format(a), 'true'[i]))
 
-                tmplist = sorted(tmplist, key=lambda z: z[1])
+                print('@@@@SMR tmplist: {0}'.format(repr(tmplist)))
+                tmplist = sorted(tmplist, key=lambda z: int(z[1]))
                 for x in tmplist:
                     first_group = first_group.replace(x[0], str(x[1]))
 

@@ -18,6 +18,7 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 """
 import json
+import six
 from six.moves import urllib_parse
 from resolveurl import common
 from resolveurl.plugins.lib import helpers
@@ -30,9 +31,6 @@ class OKResolver(ResolveUrl):
     pattern = r'(?://|\.)(ok\.ru|odnoklassniki\.ru)/(?:videoembed|video)/(\d+)'
     header = {"User-Agent": common.OPERA_USER_AGENT}
     qual_map = {'ultra': '2160', 'quad': '1440', 'full': '1080', 'hd': '720', 'sd': '480', 'low': '360', 'lowest': '240', 'mobile': '144'}
-
-    def __init__(self):
-        self.net = common.Net()
 
     def get_media_url(self, host, media_id):
         vids = self.__get_Metadata(media_id)
@@ -47,6 +45,7 @@ class OKResolver(ResolveUrl):
             except:
                 pass
             source = helpers.pick_source(sources)
+            source = source.encode('utf-8') if six.PY2 else source
             source = source + helpers.append_headers(self.header)
         else:
             source = vids

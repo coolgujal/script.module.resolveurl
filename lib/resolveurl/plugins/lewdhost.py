@@ -17,6 +17,8 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 '''
 
 import re
+import base64
+import six
 from resolveurl.plugins.lib import helpers
 from resolveurl.plugins.lib import jsunpack
 from resolveurl import common
@@ -33,17 +35,20 @@ class LewdHostResolver(ResolveUrl):
 
     def get_media_url(self, host, media_id):
         web_url = self.get_url(host, media_id)
-        headers = {'User-Agent': common.RAND_UA,
-                   'Referer': web_url}
+        headers = {'User-Agent': common.RAND_UA}
         html = self.net.http_GET(web_url, headers=headers).content
 
         r = re.search(r'JuicyCodes\.Run\("([^)]+)"\)', html)
 
         if r:
-            jc = r.group(1).replace('"+"', '').decode('base64')
-            jc = jsunpack.unpack(jc)
+            jc = r.group(1).replace('"+"', '')
+            html = jc.encode('ascii') if six.PY3 else jc
+            html = base64.b64decode(html)
+            html = html.decode('latin-1') if six.PY3 else html
+            jc = jsunpack.unpack(html)
             sources = helpers.scrape_sources(jc)
-            headers.update({'Range': 'bytes=0-'})
+            headers.update({'Range': 'bytes=0-',
+                            'Referer': web_url})
             return helpers.pick_source(sources) + helpers.append_headers(headers)
 
         raise ResolverError('Video cannot be located.')
