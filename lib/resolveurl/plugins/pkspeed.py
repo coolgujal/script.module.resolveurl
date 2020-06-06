@@ -25,20 +25,15 @@ class PKSpeedResolver(ResolveUrl):
     domains = ["pkspeed.net"]
     pattern = r'(?://|\.)(pkspeed\.net)/(?:embed-)?([A-Za-z0-9]+)'
 
-    def __init__(self):
-        self.net = common.Net()
-
     def get_media_url(self, host, media_id):
         web_url = self.get_url(host, media_id)
         headers = {'Cookie': 'ref_url=http%3A%2F%2Fwww.movieswatch.com.pk%2F',
                    'User-Agent': common.RAND_UA}
         html = self.net.http_GET(web_url, headers=headers).content
-        if html:
-            sources = helpers.scrape_sources(html)
-            if sources:
-                source = helpers.pick_source(sources)
-                headers.pop('Cookie')
-                return source + helpers.append_headers(headers)
+        sources = helpers.scrape_sources(html)
+        if sources:
+            headers.pop('Cookie')
+            return helpers.pick_source(sources) + helpers.append_headers(headers)
         raise ResolverError('File not found')
 
     def get_url(self, host, media_id):

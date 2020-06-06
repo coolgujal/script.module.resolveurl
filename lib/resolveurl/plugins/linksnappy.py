@@ -1,6 +1,5 @@
 """
-    ResolveURL Kodi module
-    linksnappy plugin
+    Plugin for ResolveURL
     Copyright (C) 2019 twilight0
 
     This program is free software: you can redistribute it and/or modify

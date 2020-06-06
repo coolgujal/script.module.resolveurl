@@ -1,5 +1,5 @@
 """
-    Kodi resolveurl plugin
+    Plugin for ResolveUrl
     Copyright (C) 2019
 
     This program is free software: you can redistribute it and/or modify
@@ -25,9 +25,6 @@ class OnlyStreamResolver(ResolveUrl):
     domains = ['onlystream.tv']
     pattern = r'(?://|\.)(onlystream\.tv)/(?:e/)?([0-9a-zA-Z-_/]+)'
 
-    def __init__(self):
-        self.net = common.Net()
-
     def get_media_url(self, host, media_id):
         web_url = self.get_url(host, media_id)
         headers = {'User-Agent': common.FF_USER_AGENT}
@@ -37,18 +34,6 @@ class OnlyStreamResolver(ResolveUrl):
             headers.update({'verifypeer': 'false'})
             return helpers.pick_source(sources) + helpers.append_headers(headers)
         raise ResolverError('Video cannot be located.')
-
-    # def get_media_url(self, host, media_id):
-    #     web_url = self.get_url(host, media_id)
-    #     headers = {'Referer': 'onlystream.tv', 'User-Agent': common.RAND_UA}
-    #     html = self.net.http_GET(web_url, headers=headers).content
-    #     r = re.search(r'sources: .{file:"(.+?)"', html, re.DOTALL)
-
-    #     headers = {'Referer': 'https://onlystream.tv/' + media_id, 'User-Agent': common.RAND_UA}
-    #     if r:
-    #         return r.group(1) + helpers.append_headers(headers)
-    #     else:
-    #         raise ResolverError('Video cannot be located.')
 
     def get_url(self, host, media_id):
         return self._default_get_url(host, media_id, template='https://{host}/e/{media_id}')

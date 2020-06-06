@@ -28,9 +28,6 @@ class MystreamResolver(ResolveUrl):
     domains = ['mystream.la', 'mystream.to', 'mstream.xyz', 'mstream.cloud', 'mstream.fun', 'mstream.press']
     pattern = r'(?://|\.)(my?stream\.(?:la|to|cloud|xyz|fun|press))/(?:external|watch/)?([0-9a-zA-Z_]+)'
 
-    def __init__(self):
-        self.net = common.Net()
-
     def get_media_url(self, host, media_id):
         web_url = self.get_url(host, media_id)
         headers = {'Referer': web_url, 'User-Agent': common.FF_USER_AGENT}
@@ -42,9 +39,10 @@ class MystreamResolver(ResolveUrl):
         match = re.search(r'(\$=.+?;)\s*<', html, re.DOTALL)
         if match:
             sdata = self.decode(match.group(1))
-            s = re.search(r"src',\s*'([^']+)", sdata)
-            if s:
-                return s.group(1) + helpers.append_headers(headers)
+            if sdata:
+                s = re.search(r"src',\s*'([^']+)", sdata)
+                if s:
+                    return s.group(1) + helpers.append_headers(headers)
 
         raise ResolverError('Video Link Not Found')
 
@@ -87,8 +85,7 @@ class MystreamResolver(ResolveUrl):
                     elif b == '(!""+"")[$]':
                         tmplist.append(("$.{}+".format(a), 'true'[i]))
 
-                print('@@@@SMR tmplist: {0}'.format(repr(tmplist)))
-                tmplist = sorted(tmplist, key=lambda z: int(z[1]))
+                tmplist = sorted(tmplist, key=lambda z: str(z[1]))
                 for x in tmplist:
                     first_group = first_group.replace(x[0], str(x[1]))
 
@@ -96,7 +93,7 @@ class MystreamResolver(ResolveUrl):
                                          .replace('\\"', '\\').replace('"', '').replace("+", "")
 
             try:
-                final_data = first_group.decode('unicode-escape').decode('unicode-escape')
+                final_data = first_group.encode('ascii').decode('unicode-escape').encode('ascii').decode('unicode-escape')
                 return final_data
             except:
                 return False

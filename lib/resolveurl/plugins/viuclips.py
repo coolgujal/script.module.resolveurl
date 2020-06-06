@@ -27,9 +27,6 @@ class ViuclipsResolver(ResolveUrl):
     domains = ["viuclips.net", "veuclips.com"]
     pattern = r'(?://|\.)(v[ie]uclips\.(?:net|com))/(?:embed/)?([0-9a-zA-Z]+)'
 
-    def __init__(self):
-        self.net = common.Net()
-
     def get_media_url(self, host, media_id):
         web_url = self.get_url(host, media_id)
         headers = {'User-Agent': common.FF_USER_AGENT}

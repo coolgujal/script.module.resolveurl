@@ -1,4 +1,5 @@
 """
+Plugin for ResolveUrl
 Copyright (C) 2017 kodistuff1
 
 This program is free software: you can redistribute it and/or modify

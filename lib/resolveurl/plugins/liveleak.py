@@ -1,5 +1,5 @@
 """
-    Kodi resolveurl plugin
+    Plugin for ResolveURL
     Copyright (C) 2020  script.module.resolveurl
 
     This program is free software: you can redistribute it and/or modify
@@ -17,7 +17,7 @@
 """
 
 from resolveurl.plugins.__resolve_generic__ import ResolveGeneric
-from resolveurl.plugins.lib import helpers
+
 
 class LiveLeakResolver(ResolveGeneric):
     name = "liveleak"

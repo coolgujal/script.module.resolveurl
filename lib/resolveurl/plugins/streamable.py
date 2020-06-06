@@ -29,9 +29,6 @@ class StreamableResolver(ResolveUrl):
     domains = ['streamable.com']
     pattern = r'(?://|\.)(streamable\.com)/(?:s/)?([a-zA-Z0-9]+(?:/[a-zA-Z0-9]+)?)'
 
-    def __init__(self):
-        self.net = common.Net()
-
     def get_media_url(self, host, media_id):
         web_url = self.get_url(host, media_id)
         headers = {'User-Agent': common.RAND_UA}
@@ -48,8 +45,8 @@ class StreamableResolver(ResolveUrl):
             sources.sort(key=lambda x: x[0], reverse=True)
             headers['Cookie'] = 'volume=0.51; muted=false; session={}'.format(self.base36encode(int(str(random.random())[2:16])))
             return helpers.pick_source(sources).replace('&amp;', '&') + helpers.append_headers(headers)
-        else:
-            raise ResolverError('JSON Not Found')
+
+        raise ResolverError('Video not found')
 
     def get_url(self, host, media_id):
         return self._default_get_url(host, media_id, template='https://{host}/s/{media_id}')

@@ -1,5 +1,5 @@
 """
-    ResolveURL Addon for Kodi
+    Plugin for ResolveUrl
     Copyright (C) 2016 t0mm0, tknorris
 
     This program is free software: you can redistribute it and/or modify
@@ -22,6 +22,7 @@ import hashlib
 import time
 from six.moves import urllib_error
 from resolveurl import common
+from resolveurl.common import i18n
 from resolveurl.resolver import ResolveUrl, ResolverError
 try:
     from crypto.keyedHash.hmacHash import HMAC_SHA1
@@ -36,10 +37,10 @@ import binascii
 def pbkdf2(password, salt, iterations, keySize, PRF=HMAC_SHA1):
     """ Create key of size keySize from password and salt """
     if len(password) > 63:
-        raise 'Password too long for pbkdf2'
+        raise ResolverError('Password too long for pbkdf2')
     # if len(password)<8 : raise 'Password too short for pbkdf2'
     if (keySize > 10000):         # spec says >4294967295L*digestSize
-        raise 'keySize too long for PBKDF2'
+        raise ResolverError('keySize too long for PBKDF2')
 
     prf = PRF(key=password)  # HMAC_SHA1
     numBlocks = int(ceil(1. * keySize / prf.digest_size))  # ceiling function
@@ -181,9 +182,10 @@ class SmoozedResolver(ResolveUrl):
 
     @classmethod
     def get_settings_xml(cls):
-        xml = super(cls, cls).get_settings_xml()
-        xml.append('<setting id="%s_email" visible="true" type="text" label="Username" default=""/>' % (cls.__name__))
-        xml.append('<setting id="%s_password" visible="true" type="text" label="Password" default=""/>' % (cls.__name__))
+        xml = super(cls, cls).get_settings_xml(include_login=False)
+        xml.append('<setting id="%s_login" type="bool" label="%s" default="false"/>' % (cls.__name__, i18n('login')))
+        xml.append('<setting id="%s_username" enable="eq(-1,true)" type="text" label="%s" default=""/>' % (cls.__name__, i18n('username')))
+        xml.append('<setting id="%s_password" enable="eq(-2,true)" type="text" label="%s" option="hidden" default=""/>' % (cls.__name__, i18n('password')))
         xml.append('<setting id="%s_session_key" visible="false" type="text" default=""/>' % (cls.__name__))
         return xml
 

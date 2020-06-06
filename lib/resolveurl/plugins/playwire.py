@@ -2,7 +2,7 @@
     OVERALL CREDIT TO:
         t0mm0, Eldorado, VOINAGE, BSTRDMKR, tknorris, smokdpi, TheHighway
 
-    resolveurl XBMC Addon
+    plugin for ResolveUrl
     Copyright (C) 2011 t0mm0
 
     This program is free software: you can redistribute it and/or modify
@@ -23,7 +23,6 @@ import re
 import json
 import six
 from resolveurl.plugins.lib import helpers
-from resolveurl import common
 from resolveurl.resolver import ResolveUrl, ResolverError
 
 
@@ -32,42 +31,34 @@ class PlayWireResolver(ResolveUrl):
     domains = ["playwire.com"]
     pattern = r'(?://|\.)(config\.playwire\.com)/(.+?)/(?:zeus|player)\.json'
     pattern2 = r'(?://|\.)(cdn\.playwire\.com.+?\d+)/(?:config|embed)/(\d+)'
-    qual_map = {'1080': 'Full HD', '720': "HD", '480': "SD", '360': 'Low Quality', '270': 'Poor Quality', '240': 'Mobile HD', '144': 'Mobile SD'}
-
-    def __init__(self):
-        self.net = common.Net()
 
     def get_media_url(self, host, media_id):
         web_url = self.get_url(host, media_id)
         response = self.net.http_GET(web_url)
         html = response.content
 
-        if html:
-            try:
-                if 'config.playwire.com' in host:
-                    response = json.loads(html)['content']['media']['f4m']
-                elif 'v2' not in host:
-                    response = re.findall(r'<src>(.+?)</src>', html)[0]
-                else:
-                    response = json.loads(html)['src']
-                    return response
+        try:
+            if 'config.playwire.com' in host:
+                response = json.loads(html)['content']['media']['f4m']
+            elif 'v2' not in host:
+                response = re.findall(r'<src>(.+?)</src>', html)[0]
+            else:
+                response = json.loads(html)['src']
+                return response
 
-                response = self.net.http_GET(response).content
-                baseURL = re.findall(r'<baseURL>\s*(.+)\s*</baseURL>', response)[0]
-                media = re.findall(r'<media url="(\S+)".+?height="(\d+)".*?/>', response)
-                media.sort(key=lambda x: x[1], reverse=True)
-                sources = [('%s' % self.__replaceQuality(i[1], i[1]), '%s/%s' % (baseURL, i[0])) for i in media]
-                source = helpers.pick_source(sources)
-                source = source.encode('utf-8') if six.PY2 else source
-                return source
+            response = self.net.http_GET(response).content
+            baseURL = re.findall(r'<baseURL>\s*(.+)\s*</baseURL>', response)[0]
+            media = re.findall(r'<media\s*url="(\S+mp4)".+?height="(\d+)"', response)
+            media.sort(key=lambda x: x[1], reverse=True)
+            sources = [(i[1], '{0}/{1}'.format(baseURL, i[0])) for i in media]
+            source = helpers.pick_source(sources)
+            source = source.encode('utf-8') if six.PY2 else source
+            return source
 
-            except:
-                raise ResolverError('Unable to resolve url.')
+        except:
+            raise ResolverError('Unable to resolve url.')
 
         raise ResolverError('No playable video found.')
-
-    def __replaceQuality(self, qual, num):
-        return self.qual_map.get(qual, num)
 
     def get_url(self, host, media_id):
         if 'config.playwire.com' in host:

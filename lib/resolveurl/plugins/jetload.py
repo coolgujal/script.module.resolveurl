@@ -28,7 +28,6 @@ class JetloadResolver(ResolveUrl):
     pattern = r'(?://|\.)(jetload\.(?:net|tv|to))/(?:[a-zA-Z]/|.*?embed\.php\?u=)?([0-9a-zA-Z]+)'
 
     def __init__(self):
-        self.net = common.Net()
         self.headers = {'User-Agent': common.SMR_USER_AGENT}
 
     def get_media_url(self, host, media_id):

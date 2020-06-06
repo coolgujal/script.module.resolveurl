@@ -30,9 +30,6 @@ class LewdHostResolver(ResolveUrl):
     domains = ["stream.lewd.host"]
     pattern = r'(?://|\.)(stream\.lewd\.host)/embed/([0-9a-zA-Z]+)'
 
-    def __init__(self):
-        self.net = common.Net()
-
     def get_media_url(self, host, media_id):
         web_url = self.get_url(host, media_id)
         headers = {'User-Agent': common.RAND_UA}
@@ -54,4 +51,4 @@ class LewdHostResolver(ResolveUrl):
         raise ResolverError('Video cannot be located.')
 
     def get_url(self, host, media_id):
-        return self._default_get_url(host, media_id, template='https://{host}/embed/{media_id}/')
+        return self._default_get_url(host, media_id, template='http://{host}/embed/{media_id}/')

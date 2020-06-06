@@ -1,5 +1,5 @@
 """
-    resolveurl XBMC Addon
+    Plugin for ResolveURL
     Copyright (C) 2011 t0mm0, JUL1EN094
 
     This program is free software: you can redistribute it and/or modify

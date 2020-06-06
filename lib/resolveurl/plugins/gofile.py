@@ -1,5 +1,5 @@
 """
-    Kodi resolveurl plugin
+    Plugin for ResolveURL
     Copyright (C) 2019  script.module.resolveurl
 
     This program is free software: you can redistribute it and/or modify
@@ -15,6 +15,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
+
 import json
 from six.moves import urllib_parse
 from resolveurl.plugins.lib import helpers

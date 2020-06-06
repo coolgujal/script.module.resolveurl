@@ -1,5 +1,5 @@
 """
-    Kodi resolveurl plugin
+    Plugin for ResolveURL
     Copyright (C) 2019  script.module.resolveurl
 
     This program is free software: you can redistribute it and/or modify
@@ -27,7 +27,6 @@ class PixelDrainResolver(ResolveUrl):
     pattern = r'(?://|\.)(pixeldrain\.com)/(?:u|l)/([0-9a-zA-Z\-]+)'
 
     def __init__(self):
-        self.net = common.Net()
         self.headers = {'User-Agent': common.RAND_UA}
 
     def get_host_and_id(self, url):

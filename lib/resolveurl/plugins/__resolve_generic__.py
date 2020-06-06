@@ -1,5 +1,5 @@
 """
-    Kodi resolveurl plugin
+    Plugin for ResolveURL
     Copyright (C) 2016  script.module.resolveurl
 
     This program is free software: you can redistribute it and/or modify

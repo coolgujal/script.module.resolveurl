@@ -29,7 +29,6 @@ class VevIoResolver(ResolveUrl):
     pattern = r'(?://|\.)(vev\.(?:io|red))/(?:embed/)?([0-9a-zA-Z]+)'
 
     def __init__(self):
-        self.net = common.Net()
         self.headers = {'User-Agent': common.SMR_USER_AGENT}
 
     def get_media_url(self, host, media_id):

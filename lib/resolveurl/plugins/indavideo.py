@@ -1,7 +1,10 @@
-# -*- coding: UTF-8 -*-
 """
-    Kodi resolveurl plugin
+    Plugin for ResolveURL
     Copyright (C) 2016  alifrezser
+<<<<<<< HEAD:lib/resolveurl/plugins/indavideo.py
+=======
+
+>>>>>>> b2edf047aa009c5a6027c1b8ee47badb348dc6cf:lib/resolveurl/plugins/todo/indavideo.py
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
@@ -13,6 +16,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
+
 import json
 import re
 from resolveurl.plugins.lib import helpers
@@ -24,9 +28,6 @@ class IndavideoResolver(ResolveUrl):
     name = "indavideo"
     domains = ["indavideo.hu"]
     pattern = r'(?://|\.)(indavideo\.hu)/(?:player/video|video)/([0-9A-Za-z-_]+)'
-
-    def __init__(self):
-        self.net = common.Net()
 
     def get_media_url(self, host, media_id):
         web_url = self.get_url(host, media_id)
