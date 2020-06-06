@@ -1,6 +1,7 @@
+# -*- coding: UTF-8 -*-
 """
-    plugin for ResolveURL
-    Copyright (C) 2020 gujal
+    Plugin for ResolveURL
+    Copyright (C) 2017  zlootec
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -15,34 +16,33 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
+
 import re
-import json
 from resolveurl.plugins.lib import helpers
 from resolveurl import common
 from resolveurl.resolver import ResolveUrl, ResolverError
 
 
-class EasyLoadResolver(ResolveUrl):
-    name = "easyload"
-    domains = ['easyload.io']
-    pattern = r'(?://|\.)(easyload\.io)/e/([0-9a-zA-Z]+)'
+class VidstoreResolver(ResolveUrl):
+    name = "vidstore"
+    domains = ["vidstore.me"]
+    pattern = r'(?://|\.)(vidstore\.me)/(.+)'
 
     def get_media_url(self, host, media_id):
         web_url = self.get_url(host, media_id)
-        headers = {'User-Agent': common.RAND_UA}
 
+        headers = {'User-Agent': common.FF_USER_AGENT}
         html = self.net.http_GET(web_url, headers=headers).content
-        match = re.search('data="([^"]+)', html)
-        if match:
-            data = json.loads(match.group(1).replace('&quot;', '"'))
-            src = data.get('streams').get('0').get('src')
-            return self.easyload_decode(src, '15') + helpers.append_headers(headers)
 
-        raise ResolverError('Video Link Not Found')
+        sources = re.findall(r'''<source\s+src\s*=\s*['"]([^'"]+).+?label\s*=\s*['"]([^'"]+)''', html, re.DOTALL)
+        if sources:
+            sources = [(i[1], i[0]) for i in sources]
+            sources = sorted(sources, key=lambda x: x[0], reverse=True)
+            source = 'http://www.%s%s' % (host, helpers.pick_source(sources))
+            headers['Referer'] = web_url
+            source = self.net.http_GET(source, headers=headers).get_url()
+            return source + helpers.append_headers(headers)
+        raise ResolverError('File not found')
 
     def get_url(self, host, media_id):
-        return self._default_get_url(host, media_id, template='https://{host}/e/{media_id}')
-
-    def easyload_decode(self, src, t):
-        url = ''.join([chr(ord(src[i]) ^ ord(t[i % len(t)])) for i in range(len(src))])
-        return url
+        return self._default_get_url(host, media_id, template='https://www.{host}/{media_id}')

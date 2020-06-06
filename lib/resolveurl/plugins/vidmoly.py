@@ -16,25 +16,19 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 """
 
+from resolveurl.plugins.__resolve_generic__ import ResolveGeneric
 from resolveurl.plugins.lib import helpers
-from resolveurl import common
-from resolveurl.resolver import ResolveUrl, ResolverError
 
 
-class AnaVidsResolver(ResolveUrl):
-    name = "anavids.com"
-    domains = ['anavids.com']
-    pattern = r'(?://|\.)(anavids\.com)/(?:embed-)?([0-9a-zA-Z]+)'
+class VidMolyResolver(ResolveGeneric):
+    name = "vidmoly"
+    domains = ['vidmoly.me', 'vidmoly.to', 'vidmoly.net']
+    pattern = r'(?://|\.)(vidmoly\.(?:me|to|net))/(?:embed-)?([0-9a-zA-Z]+)'
 
     def get_media_url(self, host, media_id):
-        web_url = self.get_url(host, media_id)
-        headers = {'User-Agent': common.FF_USER_AGENT}
-        html = self.net.http_GET(web_url, headers=headers).content
-        sources = helpers.scrape_sources(html)
-        if sources:
-            headers.update({'verifypeer': 'false'})
-            return helpers.pick_source(sources) + helpers.append_headers(headers)
-        raise ResolverError('Video cannot be located.')
+        return helpers.get_media_url(self.get_url(host, media_id),
+                                     patterns=[r'''sources:\s*\["(?P<url>[^"]+)'''],
+                                     result_blacklist=['.mpd'])
 
     def get_url(self, host, media_id):
-        return self._default_get_url(host, media_id, template='https://{host}/embed-{media_id}.html')
+        return self._default_get_url(host, media_id, template='https://vidmoly.to/embed-{media_id}.html')

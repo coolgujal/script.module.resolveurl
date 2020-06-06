@@ -318,7 +318,8 @@ class Net:
             req.add_header(key, headers[key])
         if compression:
             req.add_header('Accept-Encoding', 'gzip')
-        req.add_unredirected_header('Host', req.host)
+        host = req.host if six.PY3 else req.get_host()
+        req.add_unredirected_header('Host', host)
         response = urllib_request.urlopen(req, timeout=15)
         return HttpResponse(response)
 
@@ -362,12 +363,12 @@ class HttpResponse:
         except:
             pass
 
-        epattern = r'<meta\s+http-equiv="Content-Type"\s+content="(?:.+?);\s+charset=(.+?)"'
-        epattern = epattern.encode('utf8') if six.PY3 else epattern
-        r = re.search(epattern, html, re.IGNORECASE)
-
-        if r:
-            encoding = r.group(1)
+        if encoding is None:
+            epattern = r'<meta\s+http-equiv="Content-Type"\s+content="(?:.+?);\s+charset=(.+?)"'
+            epattern = epattern.encode('utf8') if six.PY3 else epattern
+            r = re.search(epattern, html, re.IGNORECASE)
+            if r:
+                encoding = r.group(1).decode('utf8') if six.PY3 else r.group(1)
 
         if encoding is not None:
             html = html.decode(encoding, errors='ignore')

@@ -28,9 +28,6 @@ class CdaResolver(ResolveUrl):
     domains = ['m.cda.pl', 'cda.pl', 'www.cda.pl', 'ebd.cda.pl']
     pattern = r'(?://|\.)(cda\.pl)/(?:.\d+x\d+|video)/([0-9a-zA-Z]+)'
 
-    def __init__(self):
-        self.net = common.Net()
-
     def get_media_url(self, host, media_id):
         web_url = self.get_url(host, media_id)
         headers = {'Referer': web_url, 'User-Agent': common.RAND_UA}

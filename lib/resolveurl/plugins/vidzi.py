@@ -1,6 +1,6 @@
 """
 Plugin for ResolveURL
-Copyright (C) 2015 tknorris
+Copyright (C) 2014 Eldorado
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -20,14 +20,14 @@ from resolveurl.plugins.__resolve_generic__ import ResolveGeneric
 from resolveurl.plugins.lib import helpers
 
 
-class GrifthostResolver(ResolveGeneric):
-    name = "grifthost"
-    domains = ["grifthost.com"]
-    pattern = r'(?://|\.)(grifthost\.com)/(?:embed-)?([0-9a-zA-Z/]+)'
+class VidziResolver(ResolveGeneric):
+    name = "vidzi"
+    domains = ["vidzi.tv", "vidzi.nu"]
+    pattern = r'(?://|\.)(vidzi\.(?:tv|nu))/(?:embed-)?([0-9a-zA-Z]+)'
 
     def get_media_url(self, host, media_id):
         return helpers.get_media_url(self.get_url(host, media_id),
-                                     patterns=[r'''file:\s*['"](?P<url>[^'"]+)''']).replace(' ', '%20')
+                                     patterns=[r'''["']?(?:file|url)["']?\s*[:=]\s*["'](?P<url>[^"']+)''']).replace(' ', '%20')
 
     def get_url(self, host, media_id):
-        return self._default_get_url(host, media_id)
+        return self._default_get_url(host, media_id, template='https://vidzi.nu/embed-{media_id}.html')

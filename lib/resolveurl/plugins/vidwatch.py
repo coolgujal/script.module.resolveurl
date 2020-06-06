@@ -1,6 +1,9 @@
 """
-    Plugin for ResolveUrl
-    Copyright (C) 2020 gujal
+    OVERALL CREDIT TO:
+        t0mm0, Eldorado, VOINAGE, BSTRDMKR, tknorris, smokdpi, TheHighway
+
+    Plugin for ResolveURL
+    Copyright (C) 2011 t0mm0
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -15,20 +18,18 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-
 from resolveurl.plugins.__resolve_generic__ import ResolveGeneric
 from resolveurl.plugins.lib import helpers
 
 
-class BrighteonResolver(ResolveGeneric):
-    name = "brighteon"
-    domains = ['brighteon.com']
-    pattern = r'(?://|\.)(brighteon\.com)/(?:embed)?/?([\w-]+)'
+class VidwatchResolver(ResolveGeneric):
+    name = "vidwatch.me"
+    domains = ['vidwatch3.me', 'vidwatch4.me', 'vidwatch.me']
+    pattern = r'(?://|\.)(vidwatch\d*\.me)/(?:embed-)?([a-zA-Z0-9]+)'
 
     def get_media_url(self, host, media_id):
         return helpers.get_media_url(self.get_url(host, media_id),
-                                     patterns=[r'''source\s*src=['"](?P<url>.+?)['"].+?x-mpegURL'''],
-                                     generic_patterns=False)
+                                     patterns=[r'''file:\s*['"](?P<url>[^'"]+)'''])
 
     def get_url(self, host, media_id):
-        return self._default_get_url(host, media_id, template='https://www.{host}/embed/{media_id}')
+        return self._default_get_url(host, media_id, template='https://vidwatch.me/embed-{media_id}.html')

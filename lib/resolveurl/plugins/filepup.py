@@ -28,9 +28,6 @@ class FilePupResolver(ResolveUrl):
     pattern = r'(?://|\.)(filepup.(?:net))/(?:play|files)/([0-9a-zA-Z]+)'
     headers = {'User-Agent': common.RAND_UA}
 
-    def __init__(self):
-        self.net = common.Net()
-
     def get_media_url(self, host, media_id):
         web_url = self.get_url(host, media_id)
         html = self.net.http_GET(web_url, headers=self.headers).content

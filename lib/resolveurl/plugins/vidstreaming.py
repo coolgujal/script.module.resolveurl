@@ -1,6 +1,6 @@
 """
-    Plugin for ResolveUrl
-    Copyright (C) 2020 gujal
+    Plugin for ResolveURL
+    Copyright (C) 2016  script.module.resolveurl
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -17,18 +17,12 @@
 """
 
 from resolveurl.plugins.__resolve_generic__ import ResolveGeneric
-from resolveurl.plugins.lib import helpers
 
 
-class BrighteonResolver(ResolveGeneric):
-    name = "brighteon"
-    domains = ['brighteon.com']
-    pattern = r'(?://|\.)(brighteon\.com)/(?:embed)?/?([\w-]+)'
-
-    def get_media_url(self, host, media_id):
-        return helpers.get_media_url(self.get_url(host, media_id),
-                                     patterns=[r'''source\s*src=['"](?P<url>.+?)['"].+?x-mpegURL'''],
-                                     generic_patterns=False)
+class VidStreamingResolver(ResolveGeneric):
+    name = "vidstreaming"
+    domains = ['vidstreaming.io']
+    pattern = r'(?://|\.)(vidstreaming\.io)/(?:streaming|embed|load)\.php\?id=([a-zA-Z0-9]+)'
 
     def get_url(self, host, media_id):
-        return self._default_get_url(host, media_id, template='https://www.{host}/embed/{media_id}')
+        return self._default_get_url(host, media_id, template='https://{host}/streaming.php?id={media_id}')

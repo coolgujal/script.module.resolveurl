@@ -1,5 +1,5 @@
-'''
-Hugefiles resolveurl plugin
+"""
+Plugin for ResolveURL
 Copyright (C) 2013 Vinnydude
 
 This program is free software: you can redistribute it and/or modify
@@ -14,10 +14,10 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
-'''
+"""
 
 import re
-from six.moves import urllib
+from six.moves import urllib_request, urllib_parse
 from resolveurl.plugins.lib import captcha_lib
 from resolveurl.plugins.lib import helpers
 from resolveurl import common
@@ -56,10 +56,10 @@ class HugefilesResolver(ResolveUrl):
         data['referer'] = web_url
         headers = {'User-Agent': common.EDGE_USER_AGENT}
         logger.log_debug('HugeFiles - Requesting POST URL: %s with data: %s' % (web_url, data))
-        request = urllib.request.Request(web_url, data=urllib.parse.urlencode(data), headers=headers)
+        request = urllib_request.Request(web_url, data=urllib_parse.urlencode(data), headers=headers)
 
         try:
-            stream_url = urllib.request.urlopen(request).geturl()
+            stream_url = urllib_request.urlopen(request).geturl()
         except:
             return
 
@@ -67,7 +67,7 @@ class HugefilesResolver(ResolveUrl):
         return stream_url
 
     def get_url(self, host, media_id):
-        return 'http://hugefiles.cc/%s' % media_id
+        return self._default_get_url(host, media_id, template='https://hugefiles.cc/{media_id}')
 
     @classmethod
     def isPopup(self):

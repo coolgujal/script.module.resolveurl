@@ -27,9 +27,6 @@ class CastampResolver(ResolveUrl):
     domains = ["castamp.com"]
     pattern = r'(?://|\.)(castamp\.com)/embed\.php\?c=(.*?)&'
 
-    def __init__(self):
-        self.net = common.Net()
-
     def get_media_url(self, host, media_id):
         web_url = self.get_url(host, media_id)
         html = self.net.http_GET(web_url).content

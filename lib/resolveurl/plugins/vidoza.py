@@ -1,6 +1,6 @@
 """
-    Plugin for ResolveUrl
-    Copyright (C) 2020 gujal
+    Plugin for ResolveURL
+    Copyright (C) 2016  script.module.resolveurl
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -16,19 +16,19 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from resolveurl.plugins.__resolve_generic__ import ResolveGeneric
 from resolveurl.plugins.lib import helpers
+from resolveurl.plugins.__resolve_generic__ import ResolveGeneric
 
 
-class BrighteonResolver(ResolveGeneric):
-    name = "brighteon"
-    domains = ['brighteon.com']
-    pattern = r'(?://|\.)(brighteon\.com)/(?:embed)?/?([\w-]+)'
+class VidozaResolver(ResolveGeneric):
+    name = 'vidoza'
+    domains = ['vidoza.net']
+    pattern = r'(?://|\.)(vidoza\.net)/(?:embed-)?([0-9a-zA-Z]+)'
 
     def get_media_url(self, host, media_id):
         return helpers.get_media_url(self.get_url(host, media_id),
-                                     patterns=[r'''source\s*src=['"](?P<url>.+?)['"].+?x-mpegURL'''],
-                                     generic_patterns=False)
+                                     patterns=[r'''["']?\s*(?:file|src)\s*["']?\s*[:=,]?\s*["'](?P<url>[^"']+)(?:[^}>\]]+)["']?\s*res\s*["']?\s*[:=]\s*["']?(?P<label>[^"',]+)'''],
+                                     generic_patterns=False).replace(' ', '%20')
 
     def get_url(self, host, media_id):
-        return self._default_get_url(host, media_id, template='https://www.{host}/embed/{media_id}')
+        return self._default_get_url(host, media_id, template='https://{host}/embed-{media_id}.html')
