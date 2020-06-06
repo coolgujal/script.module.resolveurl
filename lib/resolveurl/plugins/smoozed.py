@@ -22,6 +22,7 @@ import hashlib
 import time
 from six.moves import urllib_error
 from resolveurl import common
+from resolveurl.common import i18n
 from resolveurl.resolver import ResolveUrl, ResolverError
 try:
     from crypto.keyedHash.hmacHash import HMAC_SHA1
@@ -182,8 +183,9 @@ class SmoozedResolver(ResolveUrl):
     @classmethod
     def get_settings_xml(cls):
         xml = super(cls, cls).get_settings_xml()
-        xml.append('<setting id="%s_email" visible="true" type="text" label="Username" default=""/>' % (cls.__name__))
-        xml.append('<setting id="%s_password" visible="true" type="text" label="Password" default=""/>' % (cls.__name__))
+        xml.append('<setting id="%s_login" type="bool" label="%s" default="false"/>' % (cls.__name__, i18n('login')))
+        xml.append('<setting id="%s_email" enable="eq(-1,true)" type="text" label="%s" default=""/>' % (cls.__name__, i18n('username')))
+        xml.append('<setting id="%s_password" enable="eq(-2,true)" type="text" label="%s" option="hidden" default=""/>' % (cls.__name__, i18n('password')))
         xml.append('<setting id="%s_session_key" visible="false" type="text" default=""/>' % (cls.__name__))
         return xml
 
