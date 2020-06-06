@@ -1,7 +1,6 @@
 """
     Plugin for ResolveUrl
-    Copyright (C) 2011 anilkuj
-    Copyright (C) 2019 cache-sk
+    Copyright (C) 2020 gujal
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -18,6 +17,7 @@
 """
 
 import json
+from six.moves import urllib_error, urllib_request
 from resolveurl.plugins.lib import helpers
 from resolveurl import common
 from resolveurl.resolver import ResolveUrl, ResolverError
@@ -33,18 +33,34 @@ class VeohResolver(ResolveUrl):
         headers = {'User-Agent': common.CHROME_USER_AGENT, 'Referer': web_url}
         html = self.net.http_GET(web_url, headers=headers).content
         _data = json.loads(html)
-        if 'video' in _data and 'src' in _data['video']:
+        if 'video' in _data and 'src' in _data.get('video', ''):
             sources = []
             _src = _data['video']['src']
             if 'HQ' in _src:
-                sources.append((720, _src['HQ']))
+                sources.append(('HQ', _src['HQ']))
             if 'Regular' in _src:
-                sources.append((480, _src['Regular']))
+                sources.append(('RQ', _src['Regular']))
 
             if len(sources) > 0:
-                return helpers.pick_source(sources) + helpers.append_headers(headers)
+                return self._redirect_test(helpers.pick_source(sources)) + helpers.append_headers(headers)
 
         raise ResolverError('Unable to locate video')
 
     def get_url(self, host, media_id):
         return self._default_get_url(host, media_id, template='https://www.{host}/watch/getVideo/{media_id}')
+
+    def _redirect_test(self, url):
+        opener = urllib_request.build_opener()
+        opener.addheaders = [('User-agent', common.CHROME_USER_AGENT),
+                             ('Referer', 'https://www.veoh.com/')]
+        try:
+            resp = opener.open(url)
+            if url != resp.geturl():
+                return resp.geturl()
+            else:
+                return url
+        except urllib_error.HTTPError as e:
+            if e.code == 403:
+                if url != e.geturl():
+                    return e.geturl()
+            raise ResolverError('File not found')

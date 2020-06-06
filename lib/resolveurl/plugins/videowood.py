@@ -28,9 +28,6 @@ class VideowoodResolver(ResolveUrl):
     domains = ['videowood.tv']
     pattern = r'(?://|\.)(videowood\.tv)/(?:embed/|video/)([0-9a-z]+)'
 
-    def __init__(self):
-        self.net = common.Net()
-
     def get_media_url(self, host, media_id):
         web_url = self.get_url(host, media_id)
         headers = {'Referer': web_url, 'User-Agent': common.FF_USER_AGENT}

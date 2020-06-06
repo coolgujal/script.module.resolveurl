@@ -2,7 +2,7 @@
     OVERALL CREDIT TO:
         t0mm0, Eldorado, VOINAGE, BSTRDMKR, tknorris, smokdpi, TheHighway
 
-    resolveurl XBMC Addon
+    Plugin for ResolveURL
     Copyright (C) 2011 t0mm0
 
     This program is free software: you can redistribute it and/or modify
@@ -28,9 +28,6 @@ class VideobinResolver(ResolveUrl):
     name = "videobin"
     domains = ['videobin.co']
     pattern = r'(?://|\.)(videobin\.co)/(?:embed-|source/)?([0-9a-zA-Z]+)'
-
-    def __init__(self):
-        self.net = common.Net()
 
     def get_media_url(self, host, media_id):
         web_url = self.get_url(host, media_id)

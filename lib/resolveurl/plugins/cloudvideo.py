@@ -2,7 +2,7 @@
     OVERALL CREDIT TO:
         t0mm0, Eldorado, VOINAGE, BSTRDMKR, tknorris, smokdpi, TheHighway
 
-    resolveurl XBMC Addon
+    Plugin for ResolveURL
     Copyright (C) 2018 jsergio
 
     This program is free software: you can redistribute it and/or modify

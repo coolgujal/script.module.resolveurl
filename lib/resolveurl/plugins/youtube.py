@@ -1,5 +1,5 @@
 """
-    resolveurl XBMC Addon
+    Plugin for ResolveUrl
     Copyright (C) 2011 t0mm0
 
     This program is free software: you can redistribute it and/or modify
@@ -34,7 +34,6 @@ class YoutubeResolver(ResolveUrl):
     pattern = r'''https?://(?:[0-9A-Z-]+\.)?(?:(youtu\.be|youtube(?:-nocookie)?\.com)/?\S*?[^\w\s-])([\w-]{11})(?=[^\w-]|$)(?![?=&+%\w.-]*(?:['"][^<>]*>|</a>))[?=&+%\w.-]*'''
 
     def __init__(self):
-        self.net = common.Net()
         self.headers = {'User-Agent': common.RAND_UA}
 
     def get_media_url(self, host, media_id):

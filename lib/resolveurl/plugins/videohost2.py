@@ -29,9 +29,6 @@ class VideoHost2Resolver(ResolveUrl):
     domains = ['videohost2.com']
     pattern = r'(?://|\.)(videohost2\.com)/playh\.php\?id=([0-9a-f]+)'
 
-    def __init__(self):
-        self.net = common.Net()
-
     def get_media_url(self, host, media_id):
         web_url = self.get_url(host, media_id)
         headers = {'User-Agent': common.FF_USER_AGENT}

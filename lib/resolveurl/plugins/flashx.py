@@ -31,7 +31,6 @@ class FlashxResolver(ResolveUrl):
     pattern = r'(?://|\.)(flashx\.(?:tv|to|sx|cc|bz))/(?:embed-|dl\?|embed.php\?c=)?([0-9a-zA-Z]+)'
 
     def __init__(self):
-        self.net = common.Net()
         self.headers = {'User-Agent': common.RAND_UA}
 
     def get_media_url(self, host, media_id):

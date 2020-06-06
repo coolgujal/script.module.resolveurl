@@ -28,9 +28,6 @@ class VKResolver(ResolveUrl):
     domains = ["vk.com"]
     pattern = r'(?://|\.)(vk\.com)/(?:video_ext\.php\?|video)(.+)'
 
-    def __init__(self):
-        self.net = common.Net()
-
     def get_media_url(self, host, media_id):
         headers = {'User-Agent': common.EDGE_USER_AGENT,
                    'Referer': 'https://vk.com/',

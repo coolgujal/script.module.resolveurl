@@ -1,5 +1,5 @@
 """
-    Kodi resolveurl plugin
+    Plugin for ResolveURL
     Copyright (C) 2014  smokdpi
 
     This program is free software: you can redistribute it and/or modify
@@ -33,7 +33,6 @@ class GoogleResolver(ResolveUrl):
     pattern = r'https?://(.*?(?:\.googlevideo|\.bp\.blogspot|blogger|(?:plus|drive|get|docs)\.google|google(?:usercontent|drive|apis))\.com)/(.*?(?:videoplayback\?|[\?&]authkey|host/)*.+)'
 
     def __init__(self):
-        self.net = common.Net()
         self.headers = {'User-Agent': common.FF_USER_AGENT}
         self.url_matches = ['redirector.', 'googleusercontent', '.bp.blogspot.com']
         self.itag_map = {'5': '240', '6': '270', '17': '144', '18': '360', '22': '720', '34': '360', '35': '480',

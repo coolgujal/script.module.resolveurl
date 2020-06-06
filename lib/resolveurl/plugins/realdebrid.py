@@ -1,5 +1,5 @@
 """
-    ResolveURL Addon for Kodi
+    Plugin for ResolveURL
     Copyright (C) 2016 t0mm0, tknorris, jsergio
 
     This program is free software: you can redistribute it and/or modify
@@ -15,6 +15,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
+
 import re
 from six.moves import urllib_error
 import json
@@ -136,7 +137,7 @@ class RealDebridResolver(ResolveUrl):
                                         elif any(x in status for x in STALLED):
                                             self.__delete_torrent(torrent_id)
                                             raise ResolverError('Real-Debrid: Torrent ID %s has stalled | REASON: %s' % (torrent_id, status))
-                            # xbmc.sleep(1000 * INTERVALS)  # allow api time to generate the stream_link
+
                             media_id = torrent_info.get('links')[0]
                     self.__delete_torrent(torrent_id)
                 if media_id.lower().startswith('magnet:'):
