@@ -17,8 +17,9 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 '''
 
 import re
-from lib import helpers
-from lib import jsunpack
+import six
+from resolveurl.plugins.lib import helpers
+from resolveurl.plugins.lib import jsunpack
 from resolveurl import common
 from resolveurl.resolver import ResolveUrl, ResolverError
 
@@ -26,10 +27,7 @@ from resolveurl.resolver import ResolveUrl, ResolverError
 class StreamvidResolver(ResolveUrl):
     name = "streamvid"
     domains = ["streamvid.co"]
-    pattern = '(?://|\.)(streamvid\.co)/player/([0-9a-zA-Z]+)'
-
-    def __init__(self):
-        self.net = common.Net()
+    pattern = r'(?://|\.)(streamvid\.co)/player/([0-9a-zA-Z]+)'
 
     def get_media_url(self, host, media_id):
         web_url = self.get_url(host, media_id)
@@ -48,27 +46,30 @@ class StreamvidResolver(ResolveUrl):
 
             while f < len(e):
                 try:
-                    s = Juice.index(e[f]);
-                    f += 1;
-                    o = Juice.index(e[f]);
-                    f += 1;
-                    u = Juice.index(e[f]);
-                    f += 1;
-                    a = Juice.index(e[f]);
-                    f += 1;
-                    n = s << 2 | o >> 4;
-                    r = (15 & o) << 4 | u >> 2;
+                    s = Juice.index(e[f])
+                    f += 1
+                    o = Juice.index(e[f])
+                    f += 1
+                    u = Juice.index(e[f])
+                    f += 1
+                    a = Juice.index(e[f])
+                    f += 1
+                    n = s << 2 | o >> 4
+                    r = (15 & o) << 4 | u >> 2
                     i = (3 & u) << 6 | a
                     t += chr(n)
-                    if 64 != u: t += chr(r)
-                    if 64 != a: t += chr(i)
+                    if 64 != u:
+                        t += chr(r)
+                    if 64 != a:
+                        t += chr(i)
                 except:
                     continue
                 pass
 
             try:
                 t = jsunpack.unpack(t)
-                t = unicode(t, 'utf-8')
+                # t = unicode(t, 'utf-8')
+                t = t.encode('utf-8') if six.PY2 else t
             except:
                 t = None
 

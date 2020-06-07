@@ -15,18 +15,15 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-from lib import helpers
+from resolveurl.plugins.lib import helpers
 from resolveurl import common
 from resolveurl.resolver import ResolveUrl, ResolverError
 
 
 class StreamzResolver(ResolveUrl):
     name = "streamz"
-    domains = ['streamz.cc']
-    pattern = r'(?://|\.)(streamz\.cc)/([0-9a-zA-Z]+)'
-
-    def __init__(self):
-        self.net = common.Net()
+    domains = ['streamz.cc', "streams.vg"]
+    pattern = r'(?://|\.)(streamz\.(?:cc|vg))/([0-9a-zA-Z]+)'
 
     def get_media_url(self, host, media_id):
 
@@ -38,15 +35,10 @@ class StreamzResolver(ResolveUrl):
         sources = helpers.scrape_sources(html)
 
         if sources:
-
             sources = [('mp4', self.net.http_HEAD(sources[0][1]).get_url())]
-
             headers.update({'Referer': web_url})
-
             return helpers.pick_source(sources) + helpers.append_headers(headers)
-
         else:
-
             raise ResolverError("Video not found")
 
     def get_url(self, host, media_id):

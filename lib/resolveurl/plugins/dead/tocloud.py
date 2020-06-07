@@ -15,9 +15,9 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-from __resolve_generic__ import ResolveGeneric
+from resolveurl.plugins.__resolve_generic__ import ResolveGeneric
 
 class ToCloudResolver(ResolveGeneric):
     name = "tocloud"
     domains = ["tocloud.co"]
-    pattern = '(?://|\.)(tocloud\.co)/(?:embed-)?([0-9a-zA-Z]+)'
+    pattern = r'(?://|\.)(tocloud\.co)/(?:embed-)?([0-9a-zA-Z]+)'
