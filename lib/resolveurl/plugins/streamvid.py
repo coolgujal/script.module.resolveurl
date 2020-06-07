@@ -1,6 +1,6 @@
 '''
 Plugin for ResolveURL
-Copyright (C) 2018 bugatsinho
+Copyright (C) 2020 gujal
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 '''
 
 import re
-import six
+import base64
 from resolveurl.plugins.lib import helpers
 from resolveurl.plugins.lib import jsunpack
 from resolveurl import common
@@ -34,48 +34,14 @@ class StreamvidResolver(ResolveUrl):
         headers = {'User-Agent': common.RAND_UA,
                    'Referer': web_url}
         html = self.net.http_GET(web_url, headers=headers).content
-        r = re.findall(r'JuicyCodes.Run\(([^\)]+)', html, re.IGNORECASE)
+
+        r = re.findall(r'JuicyCodes\.Run\("([^)]+)"\)', html)
 
         if r:
-            Juice = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/="
-            e = re.sub(r'\"\s*\+\s*\"', '', r[-1])
-            e = re.sub(r'[^A-Za-z0-9+\\/=]', '', e)
-
-            t = ""
-            n = r = i = s = o = u = a = f = 0
-
-            while f < len(e):
-                try:
-                    s = Juice.index(e[f])
-                    f += 1
-                    o = Juice.index(e[f])
-                    f += 1
-                    u = Juice.index(e[f])
-                    f += 1
-                    a = Juice.index(e[f])
-                    f += 1
-                    n = s << 2 | o >> 4
-                    r = (15 & o) << 4 | u >> 2
-                    i = (3 & u) << 6 | a
-                    t += chr(n)
-                    if 64 != u:
-                        t += chr(r)
-                    if 64 != a:
-                        t += chr(i)
-                except:
-                    continue
-                pass
-
-            try:
-                t = jsunpack.unpack(t)
-                # t = unicode(t, 'utf-8')
-                t = t.encode('utf-8') if six.PY2 else t
-            except:
-                t = None
-
-            sources = helpers.scrape_sources(t)
-
-            headers.update({'Range': 'bytes=0-'})
+            jc = r[-1].replace('"+"', '')
+            jc = base64.b64decode(jc.encode('ascii'))
+            jc = jsunpack.unpack(jc.decode('ascii'))
+            sources = helpers.scrape_sources(jc)
             return helpers.pick_source(sources) + helpers.append_headers(headers)
 
         raise ResolverError('Video cannot be located.')
