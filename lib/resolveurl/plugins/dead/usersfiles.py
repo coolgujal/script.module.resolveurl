@@ -1,6 +1,5 @@
 """
-    upfiles plugin for ResolveURL
-    Copyright (C) 2018 gujal
+    Copyright (C) 2015  tknorris
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -17,8 +16,10 @@
 """
 from __resolve_generic__ import ResolveGeneric
 
+class UsersFilesResolver(ResolveGeneric):
+    name = "UsersFiles"
+    domains = ["usersfiles.com"]
+    pattern = '(?://|\.)(usersfiles\.com)/(?:embed-)?([0-9a-zA-Z/]+)'
 
-class UpFilesResolver(ResolveGeneric):
-    name = "upfiles"
-    domains = ['upfiles.pro']
-    pattern = '(?://|\.)(upfiles\.pro)/(?:embed-)?([0-9A-Za-z]+)'
+    def get_url(self, host, media_id):
+        return 'http://usersfiles.com/%s' % (media_id)

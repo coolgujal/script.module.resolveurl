@@ -1,5 +1,5 @@
 """
-    resolveurl XBMC Addon
+    Plugin for ResolveUrl
     Copyright (C) 2018 jsergio
 
     This program is free software: you can redistribute it and/or modify
@@ -16,7 +16,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 import re
-from lib import helpers
+from resolveurl.plugins.lib import helpers
 from resolveurl import common
 from resolveurl.resolver import ResolveUrl, ResolverError
 
@@ -24,29 +24,23 @@ from resolveurl.resolver import ResolveUrl, ResolverError
 class UnitPlayResolver(ResolveUrl):
     name = "unitplay"
     domains = ["unitplay.net"]
-    pattern = '(?://|\.)(unitplay\.net)/tt([0-9]+)'
-
-    def __init__(self):
-        self.net = common.Net()
+    pattern = r'(?://|\.)(unitplay\.net)/tt([0-9]+)'
 
     def get_media_url(self, host, media_id):
         web_url = self.get_url(host, media_id)
         headers = {'User-Agent': common.RAND_UA}
         html = self.net.http_GET(web_url, headers=headers).content
-        
-        if html:
-            player_id = re.search('''SvplayerID\|([a-z0-9]+)''', html, re.I)
-            if player_id:
-                player_url = 'https://unitplay.net//CallPlayer'
-                data = {'id': player_id.group(1)}
-                headers.update({'Referer': web_url})
-                _html = self.net.http_POST(player_url, data, headers=headers).content
-                if _html:
-                    _html = _html.decode("hex")
-                    sources = helpers.scrape_sources(_html)
-                    if sources:
-                        return helpers.pick_source(sources) + helpers.append_headers(headers)
-                
+        player_id = re.search(r'''SvplayerID\|([a-z0-9]+)''', html, re.I)
+        if player_id:
+            player_url = 'https://unitplay.net//CallPlayer'
+            data = {'id': player_id.group(1)}
+            headers.update({'Referer': web_url})
+            _html = self.net.http_POST(player_url, data, headers=headers).content
+            _html = _html.encode('ascii').decode("hex")
+            sources = helpers.scrape_sources(_html)
+            if sources:
+                return helpers.pick_source(sources) + helpers.append_headers(headers)
+
         raise ResolverError("Unable to locate video")
 
     def get_url(self, host, media_id):
