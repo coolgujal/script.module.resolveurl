@@ -1,6 +1,6 @@
 """
-    resolveurl XBMC Addon
-    Copyright (C) 2015 tknorris
+    Plugin for ResolveUrl
+    Copyright (C) 2014 Lorka
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -15,16 +15,18 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-from lib import helpers
-from __resolve_generic__ import ResolveGeneric
+
+from resolveurl.plugins.__resolve_generic__ import ResolveGeneric
+from resolveurl.plugins.lib import helpers
 
 
-class TusfilesResolver(ResolveGeneric):
-    name = "tusfiles"
-    domains = ['tusfiles.net', 'tusfiles.com']
-    pattern = '(?://|\.)(tusfiles\.(?:net|com))/(?:embed-)?([0-9a-zA-Z]+)'
+class UsersCloudResolver(ResolveGeneric):
+    name = "userscloud"
+    domains = ["userscloud.com"]
+    pattern = r'(?://|\.)(userscloud\.com)/(?:embed-|embed/)?([0-9a-zA-Z/]+)'
 
     def get_media_url(self, host, media_id):
-        direct_url = 'http://%s/%s' % (host, media_id)
-        for web_url in [self.get_url(host, media_id), direct_url]:
-            return helpers.get_media_url(web_url)
+        return helpers.get_media_url(self.get_url(host, media_id), patterns=[r"""file:\s*['"](?P<url>[^'"]+)"""]).replace(' ', '%20')
+
+    def get_url(self, host, media_id):
+        return self._default_get_url(host, media_id, template='https://{host}/{media_id}')

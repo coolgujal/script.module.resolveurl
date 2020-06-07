@@ -1,6 +1,6 @@
-# -*- coding: UTF-8 -*-
 """
-    Copyright (C) 2015  tknorris
+    Plugin for ResolveUrl
+    Copyright (C) 2015 tknorris
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -15,12 +15,17 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-from __resolve_generic__ import ResolveGeneric
 
-class UsersFilesResolver(ResolveGeneric):
-    name = "UsersFiles"
-    domains = ["usersfiles.com"]
-    pattern = '(?://|\.)(usersfiles\.com)/(?:embed-)?([0-9a-zA-Z/]+)'
+from resolveurl.plugins.lib import helpers
+from resolveurl.plugins.__resolve_generic__ import ResolveGeneric
 
-    def get_url(self, host, media_id):
-        return 'http://usersfiles.com/%s' % (media_id)
+
+class TusfilesResolver(ResolveGeneric):
+    name = "tusfiles"
+    domains = ['tusfiles.net', 'tusfiles.com']
+    pattern = r'(?://|\.)(tusfiles\.(?:net|com))/(?:embed-)?([0-9a-zA-Z]+)'
+
+    def get_media_url(self, host, media_id):
+        direct_url = 'http://%s/%s' % (host, media_id)
+        for web_url in [self.get_url(host, media_id), direct_url]:
+            return helpers.get_media_url(web_url)
